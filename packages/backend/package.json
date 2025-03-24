@@ -5,18 +5,19 @@
   "keywords": [],
   "author": "Sebastian Szczepanski <szczep.sebastian@gmail.com>",
   "license": "ISC",
-  "main": "lib/backend.js",
+  "main": "src/index.ts",
   "directories": {
-    "lib": "lib",
+    "lib": "src",
     "test": "__tests__"
   },
   "files": [
-    "lib"
+    "src"
   ],
   "scripts": {
     "test": "node ./__tests__/backend.test.js",
     "prettier:fix": "prettier --write .",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "start": "ts-node src/index.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
