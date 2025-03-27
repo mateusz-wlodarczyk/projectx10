@@ -1,52 +1,34 @@
-// import express from "express";
-
+import dotenv from "dotenv";
+dotenv.config();
 import { BoatAroundService } from "./services/BoatAroundService";
-import { BoatSearchedResaultsCountry } from "./types/searchedBoat";
-import { SingleBoatDetails } from "./types/searchedBoatSingleTypes";
+import { SupabaseService } from "./services/supabaseService";
+import { SingleBoatAvability, SingleBoatDataAvability } from "./types/avabilityBoat";
 
 const boatServiceCatamaran = new BoatAroundService();
-
-async function fetchBoats() {
+const supabaseService = new SupabaseService();
+//pewnie wywalic do innego pliku? //utils?
+export async function fetchBoats() {
   const params = { country: "croatia", category: "catamaran" };
-  const croatiaCatamarans = await boatServiceCatamaran.getBoats<SingleBoatDetails[], BoatSearchedResaultsCountry>(params);
-  console.log(croatiaCatamarans);
+  const response = await boatServiceCatamaran.getBoats(params);
+  return response;
 }
-async function fetchBoatsTest() {
-  let allBoats: SingleBoatDetails[] = [];
-  let currentPage = 1;
-  let totalResults: number;
-  let params = { country: "croatia", category: "catamaran", page: currentPage };
-  const response = await boatServiceCatamaran.getBoatsTest<BoatSearchedResaultsCountry>(params);
-
-  allBoats = [...allBoats, ...response.data[0].data];
-  totalResults = response.data[0].totalBoats;
-
-  while (allBoats.length < totalResults) {
-    currentPage++;
-    params = { ...params, page: currentPage };
-    const response = await boatServiceCatamaran.getBoatsTest<BoatSearchedResaultsCountry>(params);
-    allBoats = [...allBoats, ...response.data[0].data];
-  }
-  console.log(allBoats);
-
-  // return allBoats
+//pewnie wywalic do innego pliku? //utils?
+export async function fetchAvabilitySingleBoat(slug: string) {
+  const response = await boatServiceCatamaran.getAvailabilitySingleBoat<SingleBoatAvability>(slug);
+  return response;
 }
-export function main() {
-  fetchBoatsTest();
+export async function main() {
+  const catamarans = await fetchBoats();
+  await Promise.all(
+    catamarans.map(async (el) => {
+      const { error: errorUpsertData } = await supabaseService.upsertData("boat_catamarans", el);
+      const avabilityBoat = await fetchAvabilitySingleBoat(el.slug);
+      const { error: errorInsertData } = await supabaseService.insertData<SingleBoatDataAvability>("boat_avability", avabilityBoat.data[0]);
+      if (errorUpsertData || errorInsertData) {
+        console.log(`errorUpsertData: ${errorUpsertData}, ${JSON.stringify(errorUpsertData, null, 2)}`);
+        console.log(`errorInsertData: ${errorInsertData}, ${JSON.stringify(errorInsertData, null, 2)}`);
+      }
+    }),
+  );
 }
 main();
-
-///
-///
-///
-
-// const app = express();
-// const PORT = 3000;
-
-// app.get("/", (req, res) => {
-//   res.send("Hello World");
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server is running on http://localhost:${PORT}`);
-// });

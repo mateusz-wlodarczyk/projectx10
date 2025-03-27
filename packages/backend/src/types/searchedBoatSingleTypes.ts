@@ -27,8 +27,8 @@ export type SingleBoatParameters = {
   maximum_speed: number;
   water_tank: number;
   waste_tank: number;
-  single_cabins_outdoor_entrance: false;
-  single_cabins_indoor_entrance: false;
+  single_cabins_outdoor_entrance: boolean;
+  single_cabins_indoor_entrance: boolean;
 };
 
 export type USP = { name: string; icon: string; provider: string };
@@ -42,6 +42,11 @@ export type ManufacturerNamedItemCount = {
   count: number;
   manufacturer: string;
   _id: string;
+  name: string;
+};
+export type NoLicenseType = {
+  _id: string;
+  slug: string;
   name: string;
 };
 export type EmptyObjectCancellationInsurance = Record<string, any>;
@@ -135,7 +140,8 @@ export type SingleBoatDetails = {
   sail: string;
   engineType: string;
   usp: USP[];
-  cancellationInsurance: EmptyObjectCancellationInsurance;
+  cancellationInsurance: EmptyObjectCancellationInsurance | null;
+  noLicense: NoLicenseType | null;
   totalReviews: number;
   lastCustomer: string;
   rank: number;
@@ -148,10 +154,10 @@ export type SingleBoatDetails = {
   charterLoyalty: boolean;
   additional_specials: any[];
   featuredUsp: USP;
-  restrictions_covered: EmptyObjectRestrictions_covered;
+  restrictions_covered: EmptyObjectRestrictions_covered | null;
   freeBerths: EmptyObjectFreeBerths;
   charter: string;
-  charter_logo: string;
+  charter_logo: string | null;
   charter_id: string;
   charter_rank: CharterRank;
   prepayment: number;

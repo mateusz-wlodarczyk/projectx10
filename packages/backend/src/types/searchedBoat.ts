@@ -4,7 +4,7 @@ export interface BoatSearchedResaultsCountry {
   status: string;
   data: [
     {
-      _id: null;
+      _id: null | string;
       data: SingleBoatDetails[];
       filter: FilterBoatSearched;
       totalBoats: number;
