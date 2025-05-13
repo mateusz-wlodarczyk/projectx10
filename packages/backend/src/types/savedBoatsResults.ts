@@ -2,7 +2,7 @@ export type BoatResultsToBeSaved = {
   filteredResults: FilteredResultsBoatResultsToBeSaved;
   slug: string;
 };
-export type DowloadedBoats = {
+export type DownloadedBoats = {
   slug: string;
 };
 export type BoatPrice = {

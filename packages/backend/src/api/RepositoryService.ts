@@ -15,10 +15,10 @@ export class RepositoryService {
   //SELECT_SPECIFIC_ROW
   public async selectSpecificRow<T>(
     tableName: string,
-    column_name: string,
+    columnName: string,
     value: string,
   ): Promise<{ data: T[] | null; error: PostgrestError | null }> {
-    const { data, error } = await this.client.from(tableName).select("*").eq(column_name, value);
+    const { data, error } = await this.client.from(tableName).select("*").eq(columnName, value);
     return { data: data as T[], error };
   }
 

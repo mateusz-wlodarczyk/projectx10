@@ -18,9 +18,9 @@ export async function main() {
   }
 
   try {
-    const { data: dowloadedBoats } = await supabaseService.selectData<{ slug: string }>("boats_list", "slug");
-    if (dowloadedBoats !== null) {
-      await processBoats(dowloadedBoats, CALCULATE_FREEWEEKS_TILL_YEAR);
+    const { data: downloadedBoats } = await supabaseService.selectData<{ slug: string }>("boats_list", "slug");
+    if (downloadedBoats !== null) {
+      await processBoats(downloadedBoats, CALCULATE_FREEWEEKS_TILL_YEAR);
     }
   } catch (error) {
     handleError(error);

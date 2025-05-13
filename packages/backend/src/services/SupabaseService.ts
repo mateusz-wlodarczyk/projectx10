@@ -41,9 +41,9 @@ export class SupabaseService {
 
   public async selectSpecificData<T>(
     tableName: string,
-    column_name: string,
+    columnName: string,
     value: string,
   ): Promise<{ data: T[] | null; error: PostgrestError | null }> {
-    return this.client.selectSpecificRow<T>(tableName, column_name, value);
+    return this.client.selectSpecificRow<T>(tableName, columnName, value);
   }
 }

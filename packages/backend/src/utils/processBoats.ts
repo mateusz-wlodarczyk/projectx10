@@ -1,18 +1,19 @@
 import { addDays, endOfYear, format, getDay, getISOWeek } from "date-fns";
 import { boatServiceCatamaran, supabaseService } from "..";
-import { DowloadedBoats, FreeWeeks, WeekData } from "../types/savedBoatsResults";
+import { DownloadedBoats, FreeWeeks, WeekData } from "../types/savedBoatsResults";
 import { handleError } from "./handleErrors";
 import { API_REQUEST_PRICE_DELAY_MS } from "../config/constans";
 import { SingleAvailability } from "../types/availabilityBoat";
 import { FilteredAvailabilityWithPrices, SaveAvailabilityData } from "../types/priceBoat";
+import { sleep } from "./sleep";
 
-export async function processBoats(dowloadedBoats: DowloadedBoats[], endYear: number) {
+export async function processBoats(downloadedBoats: DownloadedBoats[], endYear: number) {
   const today = new Date();
-  //todo zmienic na format yyyy-mm-dd
+  //todo zmienic na format yyyy-mm-dd - obecnie uzywany do spr zapisu w supabase
   const todayData = new Date().toISOString();
   const todayYear = today.getFullYear();
 
-  for (const singleBoatSlug of dowloadedBoats) {
+  for (const singleBoatSlug of downloadedBoats) {
     try {
       const bookedForSingleSlug = await boatServiceCatamaran.getAvailabilitySingleBoat(singleBoatSlug.slug);
       if (bookedForSingleSlug !== null) {
@@ -20,9 +21,11 @@ export async function processBoats(dowloadedBoats: DowloadedBoats[], endYear: nu
           const freeWeeks: FreeWeeks[] = getFreeWeeksInYear(bookedForSingleSlug.availabilities, year);
           const availabilityWithPrices = await getAvailabilityWithPrices(singleBoatSlug.slug, freeWeeks);
           const filteredAvailabilityWithPrices = availabilityWithPrices.filter(Boolean);
-
-          const { data: weekData } = await supabaseService.selectSpecificData<WeekData>(`boat_avaibility_${year}`, "slug", `${singleBoatSlug.slug}`);
-
+          const { data: weekData } = await supabaseService.selectSpecificData<WeekData>(
+            `boat_availability_${year}`,
+            "slug",
+            `${singleBoatSlug.slug}`,
+          );
           if (weekData !== null) {
             await processAvailabilityData(filteredAvailabilityWithPrices, weekData, singleBoatSlug.slug, todayData, year);
           }
@@ -32,7 +35,7 @@ export async function processBoats(dowloadedBoats: DowloadedBoats[], endYear: nu
       handleError(error);
     }
 
-    await delayRequest(API_REQUEST_PRICE_DELAY_MS);
+    await sleep(API_REQUEST_PRICE_DELAY_MS);
   }
 }
 
@@ -99,15 +102,15 @@ export async function saveAvailabilityData(
 ) {
   try {
     if (weekData === null || weekData === undefined || weekData[0] === undefined || weekData[0][weekKey] === undefined) {
-      await supabaseService.insertWeekDataIfNotExist(`boat_avaibility_${year}`, objToSaved, singleBoatSlug, weekKey);
+      await supabaseService.insertWeekDataIfNotExist(`boat_availability_${year}`, objToSaved, singleBoatSlug, weekKey);
     } else if (weekData[0][weekKey] === null) {
-      await supabaseService.updateWeekData(`boat_avaibility_${year}`, weekKey, objToSaved, "slug", singleBoatSlug);
+      await supabaseService.updateWeekData(`boat_availability_${year}`, weekKey, objToSaved, "slug", singleBoatSlug);
     } else {
       const existingData = weekData[0][weekKey];
       if (existingData && typeof existingData !== "string" && typeof existingData !== "number") {
         if (existingData[todayData] !== objToSaved[todayData]) {
           const updatedObj = { ...existingData, ...objToSaved };
-          await supabaseService.updateWeekData(`boat_avaibility_${year}`, weekKey, updatedObj, "slug", singleBoatSlug);
+          await supabaseService.updateWeekData(`boat_availability_${year}`, weekKey, updatedObj, "slug", singleBoatSlug);
         }
       }
     }
@@ -116,44 +119,46 @@ export async function saveAvailabilityData(
   }
 }
 
-export function delayRequest(delayMS: number) {
-  return new Promise((resolve) => setTimeout(resolve, delayMS));
-}
-
 export function getFreeWeeksInYear(reservations: SingleAvailability[], year: number) {
-  let today = new Date().getFullYear() !== year ? new Date(year, 0, 1) : new Date();
+  let today = new Date().getFullYear() === year ? new Date() : new Date(year, 0, 1);
+  const yearEnd = endOfYear(today);
+
   if (today.getFullYear() !== year) {
     today = new Date(year, 0, 1);
   }
   const dayOfWeek = getDay(today);
   const daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
   let currentSaturday = addDays(today, daysUntilSaturday);
-  const yearEnd = endOfYear(new Date(year, 11, 31));
-  const allWeekends: { chin: string; chout: string }[] = [];
 
-  while (currentSaturday <= yearEnd) {
-    const nextSaturday = addDays(currentSaturday, 7);
-    allWeekends.push({
+  const allWeekends = Array.from({ length: getISOWeek(yearEnd) }, (_, i) => {
+    const currentSaturday = addDays(today, (6 - getDay(today) + i * 7) % 7);
+    return {
       chin: format(currentSaturday, "yyyy-MM-dd"),
-      chout: format(nextSaturday, "yyyy-MM-dd"),
-    });
-
-    currentSaturday = nextSaturday;
-  }
-
-  const freeWeekends = allWeekends.filter(
-    (weekend) => !reservations.some((reservation) => reservation.chin <= weekend.chout && reservation.chout >= weekend.chin),
-  );
-  return freeWeekends;
+      chout: format(addDays(currentSaturday, 7), "yyyy-MM-dd"),
+    };
+  });
+  return allWeekends.filter((weekend) => !reservations.some((reservation) => reservation.chin <= weekend.chout && reservation.chout >= weekend.chin));
 }
 
 export async function sendBoatToServer(country: string, category: string) {
   const params = { country, category };
   const fetchedboats = await boatServiceCatamaran.getBoats(params);
+
   await Promise.all(
     fetchedboats.map(async (el) => {
+      if (!el || !el.slug) {
+        console.log(`Skipped boat: ${JSON.stringify(el)}`);
+        return;
+      }
+
       const { error: errorUpsertData } = await supabaseService.upsertData("boats_list", el);
+
       if (errorUpsertData) {
+        if (errorUpsertData.code === "23503" && errorUpsertData.message?.includes("violates foreign key constraint")) {
+          console.log(`Skipped deleted boat: ${el.slug}`);
+          return;
+        }
+
         console.log(`errorUpsertData: ${errorUpsertData}, ${JSON.stringify(errorUpsertData, null, 2)}`);
       }
     }),

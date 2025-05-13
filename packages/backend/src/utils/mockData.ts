@@ -1,13 +1,13 @@
 export const slugMockData = [
   { slug: "aventura-34-jumping-fitness" },
-  // { slug: "aventura-34-lauremi" },
-  // { slug: "aventura-34-marlon" },
-  // { slug: "bali-44-la-calma" },
-  // { slug: "aventura-37-aruna" },
-  // { slug: "bali-54-north-star" },
-  // { slug: "bali-54-oceano-2" },
-  // { slug: "catana-50-jarosa" },
-  // { slug: "catlante-600-littre" },
+  { slug: "aventura-34-lauremi" },
+  { slug: "aventura-34-marlon" },
+  { slug: "bali-44-la-calma" },
+  { slug: "aventura-37-aruna" },
+  { slug: "bali-54-north-star" },
+  { slug: "bali-54-oceano-2" },
+  { slug: "catana-50-jarosa" },
+  { slug: "catlante-600-littre" },
 ];
 
 export const reservationsMockData = [

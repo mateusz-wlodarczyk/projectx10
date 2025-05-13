@@ -1,4 +1,3 @@
-// do not change!
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 export class HttpClient {
