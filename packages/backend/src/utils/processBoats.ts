@@ -1,11 +1,11 @@
+import { DownloadedBoats, FreeWeeks, WeekData } from "../types/savedBoatsResults.ts";
+import { handleError } from "./handleErrors.ts";
+import { API_REQUEST_PRICE_DELAY_MS } from "../config/constans.ts";
+import { SingleAvailability } from "../types/availabilityBoat.ts";
+import { FilteredAvailabilityWithPrices, SaveAvailabilityData } from "../types/priceBoat.ts";
+import { sleep } from "./sleep.ts";
+import { boatServiceCatamaran, supabaseService } from "../index.ts";
 import { addDays, endOfYear, format, getDay, getISOWeek } from "date-fns";
-import { boatServiceCatamaran, supabaseService } from "..";
-import { DownloadedBoats, FreeWeeks, WeekData } from "../types/savedBoatsResults";
-import { handleError } from "./handleErrors";
-import { API_REQUEST_PRICE_DELAY_MS } from "../config/constans";
-import { SingleAvailability } from "../types/availabilityBoat";
-import { FilteredAvailabilityWithPrices, SaveAvailabilityData } from "../types/priceBoat";
-import { sleep } from "./sleep";
 
 export async function processBoats(downloadedBoats: DownloadedBoats[], endYear: number) {
   const today = new Date();

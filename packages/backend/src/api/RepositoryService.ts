@@ -1,5 +1,4 @@
-import { SupabaseClient, PostgrestError, createClient } from "@supabase/supabase-js";
-
+import { createClient, PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 export class RepositoryService {
   private client: SupabaseClient;
 

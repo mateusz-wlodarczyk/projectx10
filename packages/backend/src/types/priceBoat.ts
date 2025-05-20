@@ -4,8 +4,7 @@ import {
   EmptyObjectFreeBerths,
   EmptyObjectRestrictions_covered,
   USP,
-} from "./searchedBoatSingleTypes";
-
+} from "./searchedBoatSingleTypes.ts";
 export type PriceForBoatPerWeek = {
   data: {
     _id: string | null;

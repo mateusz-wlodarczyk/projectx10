@@ -1,5 +1,4 @@
-import { SingleBoatDetails, FilterBoatSearched } from "./searchedBoatSingleTypes";
-
+import { SingleBoatDetails, FilterBoatSearched } from "./searchedBoatSingleTypes.ts";
 export interface BoatSearchedResultsCountry {
   status: string;
   data: {

@@ -1,21 +1,25 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { BoatAroundService } from "./services/BoatAroundService";
-import { SupabaseService } from "./services/SupabaseService";
-import { processBoats, sendBoatToServer } from "./utils/processBoats";
 
-import { handleError } from "./utils/handleErrors";
-import { CALCULATE_FREEWEEKS_TILL_YEAR } from "./config/constans";
+import { processBoats, sendBoatToServer } from "./utils/processBoats.ts";
+import { handleError } from "./utils/handleErrors.ts";
+import { CALCULATE_FREEWEEKS_TILL_YEAR } from "./config/constans.ts";
+import { BoatAroundService } from "./services/BoatAroundService.ts";
+import { SupabaseService } from "./services/SupabaseService.ts";
 
 export const boatServiceCatamaran = new BoatAroundService();
 export const supabaseService = new SupabaseService();
 
 export async function main() {
-  try {
-    sendBoatToServer("croatia", "catamaran");
-  } catch (error) {
-    handleError(error);
-  }
+  //Running weekly task:
+
+  // try {
+  //   sendBoatToServer("croatia", "catamaran");
+  // } catch (error) {
+  //   handleError(error);
+  // }
+
+  //Running daily task:
 
   try {
     const { data: downloadedBoats } = await supabaseService.selectData<{ slug: string }>("boats_list", "slug");

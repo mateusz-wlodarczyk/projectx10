@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "date-fns/": "https://esm.sh/date-fns@2.30.0/",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js",
+    "sift/": "https://deno.land/x/sift/mod.ts"
+  }
+}
