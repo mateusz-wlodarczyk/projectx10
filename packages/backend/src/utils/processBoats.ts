@@ -164,3 +164,22 @@ export async function sendBoatToServer(country: string, category: string) {
     }),
   );
 }
+
+const data222 = {
+  "2025-04-09T19:18:01.552Z": { price: 5200, discount: 33 },
+  "2025-04-10T05:01:10.103Z": { price: 5199.9997, discount: 33 },
+  "2025-04-10T05:06:08.264Z": { price: 5199.9997, discount: 33 },
+  "2025-04-10T05:39:35.791Z": { price: 5199.9997, discount: 33 },
+  "2025-04-10T07:14:22.323Z": { price: 5200, discount: 33 },
+  "2025-04-10T08:51:49.007Z": { price: 5200, discount: 33 },
+  "2025-04-10T19:42:41.823Z": { price: 5200, discount: 33, createdAt: "2025-04-10T19:43:00.700Z" },
+  "2025-05-02T07:47:27.823Z": { price: 5200, discount: 34, createdAt: "2025-05-02T07:47:46.714Z" },
+  "2025-05-02T12:21:56.888Z": { price: 5200, discount: 34, createdAt: "2025-05-02T12:22:16.141Z" },
+  "2025-05-02T18:10:21.845Z": { price: 5200, discount: 34, createdAt: "2025-05-02T18:10:48.910Z" },
+  "2025-05-13T07:16:32.667Z": { price: 5200, discount: 34, createdAt: "2025-05-13T07:17:07.960Z" },
+  "2025-06-29T00:00:01.702Z": { price: 5200, discount: 36, createdAt: "2025-06-29T00:00:38.941Z" },
+  "2025-06-30T00:00:02.681Z": { price: 5200, discount: 36, createdAt: "2025-06-30T00:00:46.104Z" },
+  "2025-06-30T19:57:25.613Z": { price: 5200, discount: 36, createdAt: "2025-06-30T19:57:59.209Z" },
+  "2025-07-01T00:00:02.591Z": { price: 5200, discount: 36, createdAt: "2025-07-01T00:00:36.626Z" },
+  "2025-07-01T05:22:03.817Z": { price: 5200, discount: 36, createdAt: "2025-07-01T05:22:36.822Z" },
+};

@@ -23,6 +23,7 @@ export async function main() {
 
   try {
     const { data: downloadedBoats } = await supabaseService.selectData<{ slug: string }>("boats_list", "slug");
+    console.log("downloadedBoats", downloadedBoats);
     if (downloadedBoats !== null) {
       await processBoats(downloadedBoats, CALCULATE_FREEWEEKS_TILL_YEAR);
     }
