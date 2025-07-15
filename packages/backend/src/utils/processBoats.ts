@@ -1,42 +1,62 @@
-import { DownloadedBoats, FreeWeeks, WeekData } from "../types/savedBoatsResults.ts";
-import { handleError } from "./handleErrors.ts";
-import { API_REQUEST_PRICE_DELAY_MS } from "../config/constans.ts";
-import { SingleAvailability } from "../types/availabilityBoat.ts";
-import { FilteredAvailabilityWithPrices, SaveAvailabilityData } from "../types/priceBoat.ts";
-import { sleep } from "./sleep.ts";
-import { boatServiceCatamaran, supabaseService } from "../index.ts";
+import { DownloadedBoats, FreeWeeks, WeekData } from "../types/savedBoatsResults";
+
+import { API_REQUEST_PRICE_DELAY_MS } from "../config/constans";
+import { SingleAvailability } from "../types/availabilityBoat";
+import { FilteredAvailabilityWithPrices, SaveAvailabilityData } from "../types/priceBoat";
+import { sleep } from "./sleep";
+import { boatServiceCatamaran, loggerBoatService, loggerSupabaseService, supabaseService } from "../index";
 import { addDays, endOfYear, format, getDay, getISOWeek } from "date-fns";
 
 export async function processBoats(downloadedBoats: DownloadedBoats[], endYear: number) {
+  loggerBoatService.info(`Starting processBoats for ${downloadedBoats.length} boats, endYear: ${endYear}`);
   const today = new Date();
-  //todo zmienic na format yyyy-mm-dd - obecnie uzywany do spr zapisu w supabase
   const todayData = new Date().toISOString();
   const todayYear = today.getFullYear();
 
   for (const singleBoatSlug of downloadedBoats) {
+    loggerBoatService.info(`Processing boat: ${singleBoatSlug.slug}`);
     try {
       const bookedForSingleSlug = await boatServiceCatamaran.getAvailabilitySingleBoat(singleBoatSlug.slug);
+      loggerBoatService.info(`Fetched availability for ${singleBoatSlug.slug}:`, bookedForSingleSlug);
+
       if (bookedForSingleSlug !== null) {
         for (let year = todayYear; year <= endYear; year++) {
+          loggerBoatService.info(`Processing year: ${year} for boat: ${singleBoatSlug.slug}`);
           const freeWeeks: FreeWeeks[] = getFreeWeeksInYear(bookedForSingleSlug.availabilities, year);
+          loggerBoatService.info(`Free weeks for ${singleBoatSlug.slug} in ${year}:`, freeWeeks);
+
           const availabilityWithPrices = await getAvailabilityWithPrices(singleBoatSlug.slug, freeWeeks);
+          loggerBoatService.info(`Availability with prices for ${singleBoatSlug.slug}:`, availabilityWithPrices);
+
           const filteredAvailabilityWithPrices = availabilityWithPrices.filter(Boolean);
+          loggerBoatService.info(`Filtered availability with prices for ${singleBoatSlug.slug}:`, filteredAvailabilityWithPrices);
+
           const { data: weekData } = await supabaseService.selectSpecificData<WeekData>(
             `boat_availability_${year}`,
             "slug",
             `${singleBoatSlug.slug}`,
           );
+          loggerBoatService.info(`Week data from database for ${singleBoatSlug.slug} in ${year}:`, weekData);
+
           if (weekData !== null) {
+            loggerBoatService.info(`Processing availability data for ${singleBoatSlug.slug} in ${year}`);
             await processAvailabilityData(filteredAvailabilityWithPrices, weekData, singleBoatSlug.slug, todayData, year);
+          } else {
+            loggerBoatService.warn(`No week data found for ${singleBoatSlug.slug} in ${year}`);
           }
         }
+      } else {
+        loggerBoatService.warn(`No availability data found for ${singleBoatSlug.slug}`);
       }
     } catch (error) {
-      handleError(error);
+      loggerBoatService.error(`Error processing boat ${singleBoatSlug.slug}:`, error);
     }
 
+    loggerBoatService.info(`Finished processing boat: ${singleBoatSlug.slug}`);
     await sleep(API_REQUEST_PRICE_DELAY_MS);
   }
+
+  loggerBoatService.info("Finished processing all boats.");
 }
 
 export async function processAvailabilityData(
@@ -46,12 +66,15 @@ export async function processAvailabilityData(
   todayData: string,
   year: number,
 ) {
+  loggerBoatService.info(`Starting processAvailabilityData for slug: ${slug}, year: ${year}`);
   for (const el of filteredAvailabilityWithPrices) {
     if (el !== null) {
       try {
         const week = getISOWeek(new Date(`${el?.chout}`).toISOString());
         const chinYear = new Date(el?.chin).getFullYear();
         const choutYear = new Date(el?.chout).getFullYear();
+
+        loggerBoatService.info(`Processing week: ${week}, chinYear: ${chinYear}, choutYear: ${choutYear}`);
 
         if ((chinYear < year && choutYear === year) || (chinYear === year && choutYear === year) || (chinYear === year && choutYear > year)) {
           const weekKey = `week_${week}` as keyof WeekData;
@@ -63,20 +86,24 @@ export async function processAvailabilityData(
               createdAt: new Date().toISOString(),
             },
           };
+          loggerBoatService.info(`Saving data for weekKey: ${weekKey}, objToSaved:`, objToSaved);
           await saveAvailabilityData(weekData, slug, weekKey, objToSaved, todayData, chinYear);
         }
       } catch (error) {
-        handleError(error);
+        loggerBoatService.error(`Error processing availability data for slug: ${slug}, week: ${weekData}`, error);
       }
     }
   }
+  loggerBoatService.info(`Finished processAvailabilityData for slug: ${slug}, year: ${year}`);
 }
 
 export async function getAvailabilityWithPrices(singleBoatSlug: string, freeWeeks: FreeWeeks[]) {
-  return await Promise.all(
+  loggerBoatService.info(`Starting getAvailabilityWithPrices for slug: ${singleBoatSlug}`);
+  const results = await Promise.all(
     freeWeeks.map(async (singleAvailability) => {
       try {
         const result = await boatServiceCatamaran.getPriceForSingleAvailability(singleBoatSlug, singleAvailability);
+        loggerBoatService.info(`Fetched price for availability:`, singleAvailability, result);
         if (result !== null) {
           return {
             price: result.price,
@@ -86,12 +113,15 @@ export async function getAvailabilityWithPrices(singleBoatSlug: string, freeWeek
           };
         }
       } catch (error) {
-        handleError(error);
+        loggerBoatService.error(`Error fetching price for availability:`, singleAvailability, error);
       }
       return null;
     }),
   );
+  loggerBoatService.info(`Finished getAvailabilityWithPrices for slug: ${singleBoatSlug}, results:`, results);
+  return results;
 }
+
 export async function saveAvailabilityData(
   weekData: WeekData[] | null,
   singleBoatSlug: string,
@@ -100,26 +130,32 @@ export async function saveAvailabilityData(
   todayData: string,
   year: number,
 ) {
+  loggerBoatService.info(`Starting saveAvailabilityData for slug: ${singleBoatSlug}, weekKey: ${weekKey}`);
   try {
     if (weekData === null || weekData === undefined || weekData[0] === undefined || weekData[0][weekKey] === undefined) {
+      loggerBoatService.info(`Inserting new week data for slug: ${singleBoatSlug}, weekKey: ${weekKey}`);
       await supabaseService.insertWeekDataIfNotExist(`boat_availability_${year}`, objToSaved, singleBoatSlug, weekKey);
     } else if (weekData[0][weekKey] === null) {
+      loggerBoatService.info(`Updating week data for slug: ${singleBoatSlug}, weekKey: ${weekKey}`);
       await supabaseService.updateWeekData(`boat_availability_${year}`, weekKey, objToSaved, "slug", singleBoatSlug);
     } else {
       const existingData = weekData[0][weekKey];
       if (existingData && typeof existingData !== "string" && typeof existingData !== "number") {
         if (existingData[todayData] !== objToSaved[todayData]) {
           const updatedObj = { ...existingData, ...objToSaved };
+          loggerBoatService.info(`Merging existing data for slug: ${singleBoatSlug}, weekKey: ${weekKey}, updatedObj:`, updatedObj);
           await supabaseService.updateWeekData(`boat_availability_${year}`, weekKey, updatedObj, "slug", singleBoatSlug);
         }
       }
     }
   } catch (error) {
-    handleError(error);
+    loggerBoatService.error(`Error saving availability data for slug: ${singleBoatSlug}, weekKey: ${weekKey}`, error);
   }
+  loggerBoatService.info(`Finished saveAvailabilityData for slug: ${singleBoatSlug}, weekKey: ${weekKey}`);
 }
 
 export function getFreeWeeksInYear(reservations: SingleAvailability[], year: number) {
+  loggerBoatService.info(`Starting getFreeWeeksInYear for year: ${year}`);
   let today = new Date().getFullYear() === year ? new Date() : new Date(year, 0, 1);
   const yearEnd = endOfYear(today);
 
@@ -137,17 +173,22 @@ export function getFreeWeeksInYear(reservations: SingleAvailability[], year: num
       chout: format(addDays(currentSaturday, 7), "yyyy-MM-dd"),
     };
   });
-  return allWeekends.filter((weekend) => !reservations.some((reservation) => reservation.chin <= weekend.chout && reservation.chout >= weekend.chin));
+  const freeWeeks = allWeekends.filter(
+    (weekend) => !reservations.some((reservation) => reservation.chin <= weekend.chout && reservation.chout >= weekend.chin),
+  );
+  loggerBoatService.info(`Finished getFreeWeeksInYear for year: ${year}, freeWeeks:`, freeWeeks);
+  return freeWeeks;
 }
 
 export async function sendBoatToServer(country: string, category: string) {
+  loggerSupabaseService.info(`Starting sendBoatToServer for country: ${country}, category: ${category}`);
   const params = { country, category };
   const fetchedboats = await boatServiceCatamaran.getBoats(params);
 
   await Promise.all(
     fetchedboats.map(async (el) => {
       if (!el || !el.slug) {
-        console.log(`Skipped boat: ${JSON.stringify(el)}`);
+        loggerSupabaseService.warn(`Skipped boat: ${JSON.stringify(el)}`);
         return;
       }
 
@@ -155,14 +196,15 @@ export async function sendBoatToServer(country: string, category: string) {
 
       if (errorUpsertData) {
         if (errorUpsertData.code === "23503" && errorUpsertData.message?.includes("violates foreign key constraint")) {
-          console.log(`Skipped deleted boat: ${el.slug}`);
+          loggerSupabaseService.warn(`Skipped deleted boat: ${el.slug}`);
           return;
         }
 
-        console.log(`errorUpsertData: ${errorUpsertData}, ${JSON.stringify(errorUpsertData, null, 2)}`);
+        loggerSupabaseService.error(`Error upserting data for boat: ${el.slug}, error:`, errorUpsertData);
       }
     }),
   );
+  loggerSupabaseService.info(`Finished sendBoatToServer for country: ${country}, category: ${category}`);
 }
 
 const data222 = {

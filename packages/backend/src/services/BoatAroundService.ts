@@ -1,9 +1,9 @@
-import { HttpClient } from "../api/index.ts";
-import { API_BOAT, RESPONSE_STATUS } from "../config/constans.ts";
-import { SingleBoatAvailability, SingleBoatDataAvailabilitySimple } from "../types/availabilityBoat.ts";
-import { PriceForBoatPerWeek } from "../types/priceBoat.ts";
-import { BoatSearchedResultsCountry } from "../types/searchedBoat.ts";
-import { SingleBoatDetails } from "../types/searchedBoatSingleTypes.ts";
+import { HttpClient } from "../api/index";
+import { API_BOAT, RESPONSE_STATUS } from "../config/constans";
+import { SingleBoatAvailability, SingleBoatDataAvailabilitySimple } from "../types/availabilityBoat";
+import { PriceForBoatPerWeek } from "../types/priceBoat";
+import { BoatSearchedResultsCountry } from "../types/searchedBoat";
+import { SingleBoatDetails } from "../types/searchedBoatSingleTypes";
 export class BoatAroundService {
   private client: HttpClient;
 

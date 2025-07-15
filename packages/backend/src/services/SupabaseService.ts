@@ -1,6 +1,6 @@
 import { PostgrestError } from "@supabase/supabase-js";
-import { RepositoryService } from "../api/RepositoryService.ts";
-import { BoatPrice } from "../types/savedBoatsResults.ts";
+import { RepositoryService } from "../api/RepositoryService";
+import { BoatPrice } from "../types/savedBoatsResults";
 export class SupabaseService {
   private client: RepositoryService;
 
