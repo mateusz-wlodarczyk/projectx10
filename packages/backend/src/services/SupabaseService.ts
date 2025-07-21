@@ -1,13 +1,14 @@
 import { PostgrestError } from "@supabase/supabase-js";
 import { RepositoryService } from "../api/RepositoryService";
-import { BoatPrice } from "../types/savedBoatsResults";
+import { BoatPrice, WeekData } from "../types/savedBoatsResults";
+import { WeeklyPriceHistory } from "../types/priceBoat";
+
 export class SupabaseService {
   private client: RepositoryService;
 
   constructor() {
     const supabaseKey = process.env.SUPABASE_KEY;
     const supabaseUrl = process.env.SUPABASE_URL;
-
     this.client = new RepositoryService(supabaseUrl as string, supabaseKey as string);
   }
 
@@ -34,15 +35,11 @@ export class SupabaseService {
     return this.client.upsert<T>(table, insertData);
   }
 
-  public async selectData<T>(tableName: string, selectValue: string): Promise<{ data: T[] | null; error: PostgrestError | null }> {
-    return this.client.select<T>(tableName, selectValue);
-  }
-
-  public async selectSpecificData<T>(
+  public async selectData(
     tableName: string,
-    columnName: string,
-    value: string,
-  ): Promise<{ data: T[] | null; error: PostgrestError | null }> {
-    return this.client.selectSpecificRow<T>(tableName, columnName, value);
+    selectValue: string = "*",
+    conditions?: { column: string; value: string }[],
+  ): Promise<{ data: (WeeklyPriceHistory | { slug: string })[] | WeekData | null; error: PostgrestError | null }> {
+    return this.client.select<WeeklyPriceHistory | { slug: string }>(tableName, selectValue, conditions);
   }
 }

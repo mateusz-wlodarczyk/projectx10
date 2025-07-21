@@ -7,17 +7,20 @@ export class RepositoryService {
   }
 
   //SELECT
-  public async select<T>(tableName: string, selectValue: string): Promise<{ data: T[] | null; error: PostgrestError | null }> {
-    const { data, error } = await this.client.from(tableName).select(selectValue);
-    return { data: data as T[], error };
-  }
-  //SELECT_SPECIFIC_ROW
-  public async selectSpecificRow<T>(
+  public async select<T>(
     tableName: string,
-    columnName: string,
-    value: string,
+    selectValue: string = "*",
+    conditions?: { column: string; value: string }[],
   ): Promise<{ data: T[] | null; error: PostgrestError | null }> {
-    const { data, error } = await this.client.from(tableName).select("*").eq(columnName, value);
+    let query = this.client.from(tableName).select(selectValue);
+
+    if (conditions) {
+      conditions.forEach((condition) => {
+        query = query.eq(condition.column, condition.value);
+      });
+    }
+
+    const { data, error } = await query;
     return { data: data as T[], error };
   }
 

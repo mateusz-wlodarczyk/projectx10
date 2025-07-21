@@ -6,6 +6,7 @@ import { FilteredAvailabilityWithPrices, SaveAvailabilityData } from "../types/p
 import { sleep } from "./sleep";
 import { boatServiceCatamaran, loggerBoatService, loggerSupabaseService, supabaseService } from "../index";
 import { addDays, endOfYear, format, getDay, getISOWeek } from "date-fns";
+import { isWeekDataArray } from "./selectDataArrayChecking";
 
 export async function processBoats(downloadedBoats: DownloadedBoats[], endYear: number) {
   loggerBoatService.info(`Starting processBoats for ${downloadedBoats.length} boats, endYear: ${endYear}`);
@@ -31,14 +32,13 @@ export async function processBoats(downloadedBoats: DownloadedBoats[], endYear: 
           const filteredAvailabilityWithPrices = availabilityWithPrices.filter(Boolean);
           loggerBoatService.info(`Filtered availability with prices for ${singleBoatSlug.slug}:`, filteredAvailabilityWithPrices);
 
-          const { data: weekData } = await supabaseService.selectSpecificData<WeekData>(
-            `boat_availability_${year}`,
-            "slug",
-            `${singleBoatSlug.slug}`,
-          );
+          const { data: weekData, error } = await supabaseService.selectData(`boat_availability_${year}`, "*", [
+            { column: "slug", value: singleBoatSlug.slug },
+          ]);
+
           loggerBoatService.info(`Week data from database for ${singleBoatSlug.slug} in ${year}:`, weekData);
 
-          if (weekData !== null) {
+          if (weekData !== null && isWeekDataArray(weekData)) {
             loggerBoatService.info(`Processing availability data for ${singleBoatSlug.slug} in ${year}`);
             await processAvailabilityData(filteredAvailabilityWithPrices, weekData, singleBoatSlug.slug, todayData, year);
           } else {

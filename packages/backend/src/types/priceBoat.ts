@@ -53,3 +53,21 @@ export type PriceForBoatPerWeekData = {
 export type PriceForBoatPerWeekDataResponse = {
   price: number;
 };
+
+export type PriceEntry = {
+  price: number;
+  discount: number;
+  createdAt: string;
+};
+
+export type PriceHistory = {
+  [timestamp: string]: PriceEntry;
+};
+export type BoatQuery = {
+  slug: string;
+  week: string;
+  year: string;
+};
+export type WeeklyPriceHistory = {
+  [week: string]: PriceHistory;
+};
