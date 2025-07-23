@@ -10,6 +10,7 @@ import { SupabaseService } from "./services/SupabaseService";
 import { Logger } from "./services/Logger";
 import app from "./api/boats";
 import { isSlugArray } from "./utils/selectDataArrayChecking";
+import { setupSwagger } from "./config/swagger";
 
 const port = process.env.PORT || 8080;
 
@@ -18,6 +19,8 @@ export const supabaseService = new SupabaseService();
 export const loggerMain = new Logger("MainLogger");
 export const loggerSupabaseService = new Logger("SupabaseServiceLogger");
 export const loggerBoatService = new Logger("BoatServiceLogger");
+
+setupSwagger(app);
 
 // Running weekly task
 cron.schedule("0 0 * * 0", async () => {

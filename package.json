@@ -5,6 +5,8 @@
     "packages/*"
   ],
   "dependencies": {
-    "lerna": "^8.2.1"
+    "lerna": "^8.2.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }

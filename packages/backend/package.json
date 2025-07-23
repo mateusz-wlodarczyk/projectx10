@@ -23,18 +23,23 @@
     "gcp-build": "tsc-p ."
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.0.0",
     "@google-cloud/logging": "^11.2.0",
     "@supabase/supabase-js": "^2.49.1",
     "axios": "^1.8.4",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "node-cron": "^4.1.0"
+    "node-cron": "^4.1.0",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^4.0.5",
+    "zod-to-openapi": "^0.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.14",
+    "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.27.0",
     "@typescript-eslint/parser": "^8.27.0",
     "eslint": "^9.22.0",
