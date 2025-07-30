@@ -2,15 +2,15 @@ import cron from "node-cron";
 import dotenv from "dotenv";
 dotenv.config();
 
+import { RegisterRoutes } from "./routes/routes";
 import { processBoats, sendBoatToServer } from "./utils/processBoats";
 import { handleError } from "./utils/handleErrors";
 import { CALCULATE_FREEWEEKS_TILL_YEAR } from "./config/constans";
 import { BoatAroundService } from "./services/BoatAroundService";
 import { SupabaseService } from "./services/SupabaseService";
 import { Logger } from "./services/Logger";
-import app from "./api/boats";
 import { isSlugArray } from "./utils/selectDataArrayChecking";
-import { setupSwagger } from "./config/swagger";
+import app from "./api/boats";
 
 const port = process.env.PORT || 8080;
 
@@ -20,7 +20,7 @@ export const loggerMain = new Logger("MainLogger");
 export const loggerSupabaseService = new Logger("SupabaseServiceLogger");
 export const loggerBoatService = new Logger("BoatServiceLogger");
 
-setupSwagger(app);
+RegisterRoutes(app);
 
 // Running weekly task
 cron.schedule("0 0 * * 0", async () => {

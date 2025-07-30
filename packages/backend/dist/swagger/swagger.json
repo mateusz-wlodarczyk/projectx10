@@ -1,0 +1,153 @@
+{
+    "openapi": "3.0.0",
+    "components": {
+        "examples": {},
+        "headers": {},
+        "parameters": {},
+        "requestBodies": {},
+        "responses": {},
+        "schemas": {
+            "PriceEntry": {
+                "properties": {
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "discount": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "discount",
+                    "price"
+                ],
+                "type": "object"
+            },
+            "PriceHistory": {
+                "properties": {},
+                "additionalProperties": {
+                    "$ref": "#/components/schemas/PriceEntry"
+                },
+                "type": "object"
+            },
+            "WeeklyPriceHistory": {
+                "properties": {},
+                "additionalProperties": {
+                    "$ref": "#/components/schemas/PriceHistory"
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {}
+    },
+    "info": {
+        "title": "backend",
+        "version": "0.0.0",
+        "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
+        "license": {
+            "name": "ISC"
+        },
+        "contact": {
+            "name": "Sebastian Szczepanski ",
+            "email": "szczep.sebastian@gmail.com"
+        }
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "operationId": "GetWelcome",
+                "responses": {
+                    "200": {
+                        "description": "A welcome message",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "Welcome endpoint",
+                "tags": [
+                    "Base"
+                ],
+                "security": [],
+                "parameters": []
+            }
+        },
+        "/boat": {
+            "get": {
+                "operationId": "GetBoatData",
+                "responses": {
+                    "200": {
+                        "description": "Price history data for the boat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "boat": {
+                                            "$ref": "#/components/schemas/WeeklyPriceHistory"
+                                        },
+                                        "slug": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "boat",
+                                        "slug"
+                                    ],
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "Get boat data for a specific slug, week, and year",
+                "tags": [
+                    "Boats"
+                ],
+                "security": [],
+                "parameters": [
+                    {
+                        "description": "The slug of the boat",
+                        "in": "query",
+                        "name": "slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The week number",
+                        "in": "query",
+                        "name": "week",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The year",
+                        "in": "query",
+                        "name": "year",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ]
+}

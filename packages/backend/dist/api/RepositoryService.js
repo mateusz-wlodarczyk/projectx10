@@ -8,13 +8,14 @@ class RepositoryService {
         this.client = (0, supabase_js_1.createClient)(supabaseUrl, supabaseKey);
     }
     //SELECT
-    async select(tableName, selectValue) {
-        const { data, error } = await this.client.from(tableName).select(selectValue);
-        return { data: data, error };
-    }
-    //SELECT_SPECIFIC_ROW
-    async selectSpecificRow(tableName, columnName, value) {
-        const { data, error } = await this.client.from(tableName).select("*").eq(columnName, value);
+    async select(tableName, selectValue = "*", conditions) {
+        let query = this.client.from(tableName).select(selectValue);
+        if (conditions) {
+            conditions.forEach((condition) => {
+                query = query.eq(condition.column, condition.value);
+            });
+        }
+        const { data, error } = await query;
         return { data: data, error };
     }
     //INSERT_SPECIFIC_DATA

@@ -17,27 +17,29 @@
     "test": "node ./__tests__/backend.test.js",
     "prettier:fix": "prettier --write .",
     "lint:fix": "eslint --fix .",
-    "build": "tsc",
+    "build": "tsoa spec-and-routes && tsc",
     "start-local": "node dist/index.js",
     "start": "ts-node src/index.ts",
-    "gcp-build": "tsc-p ."
+    "gcp-build": "tsoa spec-and-routes && tsc-p .",
+    "tsoa:spec": "tsoa spec",
+    "tsoa:routes": "tsoa routes"
   },
   "dependencies": {
-    "@asteasolutions/zod-to-openapi": "^8.0.0",
     "@google-cloud/logging": "^11.2.0",
     "@supabase/supabase-js": "^2.49.1",
     "axios": "^1.8.4",
+    "body-parser": "^2.2.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "node-cron": "^4.1.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "zod": "^4.0.5",
-    "zod-to-openapi": "^0.2.1"
+    "tsoa": "^6.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@types/body-parser": "^1.19.6",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.14",
     "@types/swagger-ui-express": "^4.1.8",

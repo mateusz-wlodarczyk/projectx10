@@ -18,11 +18,8 @@ class SupabaseService {
     async upsertData(table, insertData) {
         return this.client.upsert(table, insertData);
     }
-    async selectData(tableName, selectValue) {
-        return this.client.select(tableName, selectValue);
-    }
-    async selectSpecificData(tableName, columnName, value) {
-        return this.client.selectSpecificRow(tableName, columnName, value);
+    async selectData(tableName, selectValue = "*", conditions) {
+        return this.client.select(tableName, selectValue, conditions);
     }
 }
 exports.SupabaseService = SupabaseService;
