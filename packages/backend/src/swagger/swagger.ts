@@ -10,8 +10,8 @@ export const swaggerDocument = {
       name: "ISC",
     },
     contact: {
-      name: "Sebastian Szczepanski",
-      email: "szczep.sebastian@gmail.com",
+      name: "Fake Boat",
+      email: "fake.boat@ph.com",
     },
   },
   servers: [{ url: SWAGGER_TAGS.home.url }],
