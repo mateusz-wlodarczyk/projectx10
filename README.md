@@ -12,6 +12,7 @@ A comprehensive boat data management and analytics platform built with a modern 
 - [API Documentation](#api-documentation)
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
+- [CI/CD Pipeline](#cicd-pipeline)
 - [License](#license)
 
 ## 🚢 Project Description
@@ -305,6 +306,39 @@ curl http://localhost:8080/dashboard/summary?boat_type=catamaran
 2. Add real-time notifications
 3. Expand analytics capabilities
 4. Optimize performance
+
+## 🚀 CI/CD Pipeline
+
+The project includes a comprehensive CI/CD pipeline with GitHub Actions:
+
+### Workflows
+
+1. **CI/CD Pipeline** (`ci.yml`) - Runs on push and PR to main/dev
+   - Unit Tests (Backend & Frontend)
+   - E2E Tests with Playwright
+   - Build both backend and frontend
+   - Docker image building
+   - Security scanning with Trivy
+
+2. **Pull Request Checks** (`pull-request.yml`) - Runs on PR creation/update
+   - Code linting
+   - Unit and E2E tests
+   - Generates coverage reports
+   - Posts status comments on PRs
+
+3. **Master Branch Quality Gate** (`master.yml`) - Runs on push to dev branch
+   - Comprehensive quality checks
+   - Production readiness verification
+   - Docker image building for production
+   - Security vulnerability scanning
+   - Production deployment gates
+
+### Test Coverage
+
+- Backend: Comprehensive unit tests with Vitest
+- Frontend: Component and hook tests with Vitest
+- E2E: Full integration tests with Playwright
+- Coverage reports generated for all test suites
 
 ## 📄 License
 
