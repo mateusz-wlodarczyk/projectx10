@@ -1,0 +1,3307 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"AuthResponse": {
+				"properties": {
+					"user": {
+						"properties": {
+							"emailVerified": {
+								"type": "boolean"
+							},
+							"lastName": {
+								"type": "string"
+							},
+							"firstName": {
+								"type": "string"
+							},
+							"email": {
+								"type": "string"
+							},
+							"id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"emailVerified",
+							"lastName",
+							"firstName",
+							"email",
+							"id"
+						],
+						"type": "object"
+					},
+					"session": {
+						"properties": {
+							"expires_at": {
+								"type": "number",
+								"format": "double"
+							},
+							"refresh_token": {
+								"type": "string"
+							},
+							"access_token": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"expires_at",
+							"refresh_token",
+							"access_token"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"user",
+					"session"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ErrorResponse": {
+				"properties": {
+					"error": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"error",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginRequest": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RegisterRequest": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"password",
+					"firstName",
+					"lastName"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PriceEntry": {
+				"properties": {
+					"createdAt": {
+						"type": "string"
+					},
+					"discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"createdAt",
+					"discount",
+					"price"
+				],
+				"type": "object"
+			},
+			"PriceHistory": {
+				"properties": {},
+				"additionalProperties": {
+					"$ref": "#/components/schemas/PriceEntry"
+				},
+				"type": "object"
+			},
+			"WeeklyPriceHistory": {
+				"properties": {},
+				"additionalProperties": {
+					"$ref": "#/components/schemas/PriceHistory"
+				},
+				"type": "object"
+			},
+			"DashboardSummary": {
+				"properties": {
+					"lastUpdate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"totalBoats": {
+						"type": "number",
+						"format": "double"
+					},
+					"boatType": {
+						"type": "string"
+					},
+					"totalRevenue": {
+						"type": "number",
+						"format": "double"
+					},
+					"averagePrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalBookings": {
+						"type": "number",
+						"format": "double"
+					},
+					"availabilityRate": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"lastUpdate",
+					"totalBoats",
+					"boatType",
+					"totalRevenue",
+					"averagePrice",
+					"totalBookings",
+					"availabilityRate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DashboardSummaryResponse": {
+				"properties": {
+					"summary": {
+						"$ref": "#/components/schemas/DashboardSummary"
+					},
+					"lastUpdate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dataSource": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"summary",
+					"lastUpdate",
+					"dataSource"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"KeyMetric": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"value": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"change": {
+						"type": "number",
+						"format": "double"
+					},
+					"changeType": {
+						"type": "string",
+						"enum": [
+							"increase",
+							"decrease",
+							"neutral"
+						]
+					},
+					"trend": {
+						"type": "string",
+						"enum": [
+							"up",
+							"down",
+							"stable"
+						]
+					},
+					"icon": {
+						"type": "string"
+					},
+					"color": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"title",
+					"value",
+					"unit",
+					"change",
+					"changeType",
+					"trend",
+					"icon",
+					"color"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Record_string.number_": {
+				"properties": {},
+				"additionalProperties": {
+					"type": "number",
+					"format": "double"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"DashboardMetricsResponse": {
+				"properties": {
+					"metrics": {
+						"items": {
+							"$ref": "#/components/schemas/KeyMetric"
+						},
+						"type": "array"
+					},
+					"period": {
+						"type": "string"
+					},
+					"comparison": {
+						"properties": {
+							"change": {
+								"$ref": "#/components/schemas/Record_string.number_"
+							},
+							"previous": {
+								"items": {
+									"$ref": "#/components/schemas/KeyMetric"
+								},
+								"type": "array"
+							}
+						},
+						"required": [
+							"change",
+							"previous"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"metrics",
+					"period",
+					"comparison"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WeeklyPriceDataPoint": {
+				"properties": {
+					"week": {
+						"type": "number",
+						"format": "double"
+					},
+					"averagePrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"minPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"maxPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"boatCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"week",
+					"averagePrice",
+					"minPrice",
+					"maxPrice",
+					"boatCount",
+					"timestamp"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WeeklyPriceData": {
+				"properties": {
+					"weeks": {
+						"items": {
+							"$ref": "#/components/schemas/WeeklyPriceDataPoint"
+						},
+						"type": "array"
+					},
+					"minPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"maxPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"averagePrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalBoats": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"weeks",
+					"minPrice",
+					"maxPrice",
+					"averagePrice",
+					"totalBoats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PriceTrendsResponse": {
+				"properties": {
+					"priceData": {
+						"$ref": "#/components/schemas/WeeklyPriceData"
+					},
+					"trends": {
+						"properties": {
+							"yearly": {
+								"type": "number",
+								"format": "double"
+							},
+							"monthly": {
+								"type": "number",
+								"format": "double"
+							},
+							"weekly": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"yearly",
+							"monthly",
+							"weekly"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"priceData",
+					"trends"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DiscountDataPoint": {
+				"properties": {
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"averageDiscount": {
+						"type": "number",
+						"format": "double"
+					},
+					"minDiscount": {
+						"type": "number",
+						"format": "double"
+					},
+					"maxDiscount": {
+						"type": "number",
+						"format": "double"
+					},
+					"boatCount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"timestamp",
+					"averageDiscount",
+					"minDiscount",
+					"maxDiscount",
+					"boatCount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DiscountChartData": {
+				"properties": {
+					"dataPoints": {
+						"items": {
+							"$ref": "#/components/schemas/DiscountDataPoint"
+						},
+						"type": "array"
+					},
+					"minDiscount": {
+						"type": "number",
+						"format": "double"
+					},
+					"maxDiscount": {
+						"type": "number",
+						"format": "double"
+					},
+					"averageDiscount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalBoats": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"dataPoints",
+					"minDiscount",
+					"maxDiscount",
+					"averageDiscount",
+					"totalBoats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DiscountTrendsResponse": {
+				"properties": {
+					"discountData": {
+						"$ref": "#/components/schemas/DiscountChartData"
+					},
+					"trends": {
+						"properties": {
+							"change": {
+								"type": "number",
+								"format": "double"
+							},
+							"trend": {
+								"type": "string",
+								"enum": [
+									"up",
+									"down",
+									"stable"
+								]
+							},
+							"average": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"change",
+							"trend",
+							"average"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"discountData",
+					"trends"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AvailabilityDataPoint": {
+				"properties": {
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"availabilityRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"bookedBoats": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalBoats": {
+						"type": "number",
+						"format": "double"
+					},
+					"occupancyRate": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"timestamp",
+					"availabilityRate",
+					"bookedBoats",
+					"totalBoats",
+					"occupancyRate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AvailabilityData": {
+				"properties": {
+					"dataPoints": {
+						"items": {
+							"$ref": "#/components/schemas/AvailabilityDataPoint"
+						},
+						"type": "array"
+					},
+					"averageAvailability": {
+						"type": "number",
+						"format": "double"
+					},
+					"averageOccupancy": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalBoats": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"dataPoints",
+					"averageAvailability",
+					"averageOccupancy",
+					"totalBoats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AvailabilityResponse": {
+				"properties": {
+					"availabilityData": {
+						"$ref": "#/components/schemas/AvailabilityData"
+					},
+					"insights": {
+						"properties": {
+							"averageOccupancy": {
+								"type": "number",
+								"format": "double"
+							},
+							"lowSeason": {
+								"type": "string"
+							},
+							"peakSeason": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"averageOccupancy",
+							"lowSeason",
+							"peakSeason"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"availabilityData",
+					"insights"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RevenueDataPoint": {
+				"properties": {
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"revenue": {
+						"type": "number",
+						"format": "double"
+					},
+					"bookings": {
+						"type": "number",
+						"format": "double"
+					},
+					"averageBookingValue": {
+						"type": "number",
+						"format": "double"
+					},
+					"profitMargin": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"timestamp",
+					"revenue",
+					"bookings",
+					"averageBookingValue",
+					"profitMargin"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RevenueData": {
+				"properties": {
+					"dataPoints": {
+						"items": {
+							"$ref": "#/components/schemas/RevenueDataPoint"
+						},
+						"type": "array"
+					},
+					"totalRevenue": {
+						"type": "number",
+						"format": "double"
+					},
+					"averageRevenue": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalBookings": {
+						"type": "number",
+						"format": "double"
+					},
+					"averageProfitMargin": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"dataPoints",
+					"totalRevenue",
+					"averageRevenue",
+					"totalBookings",
+					"averageProfitMargin"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RevenueResponse": {
+				"properties": {
+					"revenueData": {
+						"$ref": "#/components/schemas/RevenueData"
+					},
+					"projections": {
+						"properties": {
+							"confidence": {
+								"type": "number",
+								"format": "double"
+							},
+							"nextQuarter": {
+								"type": "number",
+								"format": "double"
+							},
+							"nextMonth": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"confidence",
+							"nextQuarter",
+							"nextMonth"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"revenueData",
+					"projections"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SummaryStat": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"value": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"trend": {
+						"type": "string",
+						"enum": [
+							"up",
+							"down",
+							"stable"
+						]
+					},
+					"category": {
+						"type": "string",
+						"enum": [
+							"performance",
+							"market",
+							"seasonal",
+							"insight"
+						]
+					},
+					"actionable": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"id",
+					"title",
+					"value",
+					"description",
+					"trend",
+					"category",
+					"actionable"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DashboardStatsResponse": {
+				"properties": {
+					"stats": {
+						"items": {
+							"$ref": "#/components/schemas/SummaryStat"
+						},
+						"type": "array"
+					},
+					"categories": {
+						"properties": {},
+						"additionalProperties": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "object"
+					}
+				},
+				"required": [
+					"stats",
+					"categories"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "BoatsStats API",
+		"version": "1.0.0",
+		"description": "Comprehensive yacht booking analytics API with boat data management, authentication, dashboard metrics, and admin functionality.",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {
+			"name": "BoatsStats API Support",
+			"email": "support@boatsstats.com"
+		}
+	},
+	"paths": {
+		"/undefined": {
+			"get": {
+				"operationId": "GetWelcome",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					null
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/AuthResponse"
+										},
+										{
+											"$ref": "#/components/schemas/ErrorResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "User login",
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"operationId": "Register",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/AuthResponse"
+										},
+										{
+											"$ref": "#/components/schemas/ErrorResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Registration successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "User already exists",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "User registration",
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/forgot-password": {
+			"post": {
+				"operationId": "ForgotPassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
+											],
+											"type": "object"
+										},
+										{
+											"$ref": "#/components/schemas/ErrorResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid email",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Password reset request",
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/reset-password": {
+			"post": {
+				"operationId": "ResetPassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
+											],
+											"type": "object"
+										},
+										{
+											"$ref": "#/components/schemas/ErrorResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid token or password",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Password reset confirmation",
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"password": {
+										"type": "string"
+									},
+									"token": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"password",
+									"token"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/logout": {
+			"post": {
+				"operationId": "Logout",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Logout user",
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/auth/profile": {
+			"post": {
+				"operationId": "UpdateProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
+											],
+											"type": "object"
+										},
+										{
+											"$ref": "#/components/schemas/ErrorResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update user profile",
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"lastName": {
+										"type": "string"
+									},
+									"firstName": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"lastName",
+									"firstName"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/users": {
+			"get": {
+				"operationId": "GetUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"users": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"total",
+										"users"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"user": {}
+									},
+									"required": [
+										"message",
+										"user"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"role": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									},
+									"firstName": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"lastName",
+									"firstName",
+									"password",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/users/{id}": {
+			"put": {
+				"operationId": "UpdateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"user": {}
+									},
+									"required": [
+										"message",
+										"user"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"role": {
+										"type": "string"
+									},
+									"status": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									},
+									"firstName": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/logs/cron": {
+			"get": {
+				"operationId": "GetCronLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"cronJobs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"total",
+										"cronJobs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/system": {
+			"get": {
+				"operationId": "GetSystemLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/cron/jobs": {
+			"get": {
+				"operationId": "GetCronJobs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"jobs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"total",
+										"jobs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/all": {
+			"get": {
+				"operationId": "GetAllSupabaseLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/edge": {
+			"get": {
+				"operationId": "GetEdgeLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/postgres": {
+			"get": {
+				"operationId": "GetPostgresLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/postgrest": {
+			"get": {
+				"operationId": "GetPostgrestLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/pooler": {
+			"get": {
+				"operationId": "GetPoolerLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/auth": {
+			"get": {
+				"operationId": "GetAuthLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/storage": {
+			"get": {
+				"operationId": "GetStorageLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/realtime": {
+			"get": {
+				"operationId": "GetRealtimeLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/edge-functions": {
+			"get": {
+				"operationId": "GetEdgeFunctionsLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/logs/pgcron": {
+			"get": {
+				"operationId": "GetPgcronLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"logs": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"message",
+										"total",
+										"logs"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/admin/notes": {
+			"get": {
+				"operationId": "GetNotes",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"notes": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"total",
+										"notes"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateNote",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"note": {}
+									},
+									"required": [
+										"message",
+										"note"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"notes": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"notes"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/notes/{id}": {
+			"put": {
+				"operationId": "UpdateNote",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"note": {}
+									},
+									"required": [
+										"message",
+										"note"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"notes": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"notes"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteNote",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/boat/health": {
+			"get": {
+				"operationId": "HealthCheck",
+				"responses": {
+					"200": {
+						"description": "Simple health status",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"timestamp": {
+											"type": "string"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"timestamp",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Health check endpoint",
+				"tags": [
+					"Boats"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/boat": {
+			"get": {
+				"operationId": "GetBoatData",
+				"responses": {
+					"200": {
+						"description": "Boat data with price history",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"errors": {
+											"items": {},
+											"type": "array"
+										},
+										"message": {
+											"type": "string"
+										},
+										"data": {
+											"properties": {
+												"boat": {
+													"$ref": "#/components/schemas/WeeklyPriceHistory"
+												},
+												"slug": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"boat",
+												"slug"
+											],
+											"type": "object"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get boat data by slug and week",
+				"tags": [
+					"Boats"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat slug identifier",
+						"in": "query",
+						"name": "slug",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Week number (1-52)",
+						"in": "query",
+						"name": "week",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/boat/search/{boatId}": {
+			"get": {
+				"operationId": "SearchBoatInBoatsList",
+				"responses": {
+					"200": {
+						"description": "Boat data from boats_list",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"data": {},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Search for specific boat in boats_list table",
+				"tags": [
+					"Boats"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat ID to search for",
+						"in": "query",
+						"name": "boatId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/boat/details/{slug}": {
+			"get": {
+				"operationId": "GetBoatDetails",
+				"responses": {
+					"200": {
+						"description": "Complete boat details from boats_list",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"data": {},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get boat details from boats_list table by slug",
+				"tags": [
+					"Boats"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat slug identifier",
+						"in": "path",
+						"name": "slug",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/boat/availability/{slug}": {
+			"get": {
+				"operationId": "GetBoatAvailability",
+				"responses": {
+					"200": {
+						"description": "Complete availability data for the boat",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"data": {},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get boat availability data from boats_availability_2025 table",
+				"tags": [
+					"Boats"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat slug identifier",
+						"in": "path",
+						"name": "slug",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Year for availability data (default: 2025)",
+						"in": "query",
+						"name": "year",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/boat/availability/{slug}/week/{week}": {
+			"get": {
+				"operationId": "GetBoatWeekData",
+				"responses": {
+					"200": {
+						"description": "Week-specific price and discount data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"data": {},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get specific week data for a boat",
+				"tags": [
+					"Boats"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat slug identifier",
+						"in": "path",
+						"name": "slug",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Week number (1-53)",
+						"in": "path",
+						"name": "week",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Year for availability data (default: 2025)",
+						"in": "query",
+						"name": "year",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/boat/list": {
+			"get": {
+				"operationId": "GetBoatsList",
+				"responses": {
+					"200": {
+						"description": "Paginated boats list",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"pagination": {},
+										"message": {
+											"type": "string"
+										},
+										"data": {},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get boats list with pagination and filtering",
+				"tags": [
+					"Boats"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Page number (default: 1)",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Items per page (default: 20, max: 100)",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Search query for boat names",
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Filter by country",
+						"in": "query",
+						"name": "country",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Filter by boat category",
+						"in": "query",
+						"name": "category",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Minimum price filter",
+						"in": "query",
+						"name": "minPrice",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Maximum price filter",
+						"in": "query",
+						"name": "maxPrice",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "sort",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "order",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"asc",
+								"desc"
+							]
+						}
+					}
+				]
+			}
+		},
+		"/boat/search": {
+			"get": {
+				"operationId": "SearchBoats",
+				"responses": {
+					"200": {
+						"description": "Search results",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"data": {},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Search boats by query",
+				"tags": [
+					"Boats"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Search query",
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Maximum results (default: 10, max: 50)",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/summary": {
+			"get": {
+				"operationId": "GetDashboardSummary",
+				"responses": {
+					"200": {
+						"description": "Dashboard summary with key metrics",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/DashboardSummaryResponse"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"error": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message",
+												"error"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message",
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get dashboard summary data",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat type filter (default: catamaran)",
+						"in": "query",
+						"name": "boat_type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Start date for data filtering",
+						"in": "query",
+						"name": "date_from",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "End date for data filtering",
+						"in": "query",
+						"name": "date_to",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/metrics": {
+			"get": {
+				"operationId": "GetKeyMetrics",
+				"responses": {
+					"200": {
+						"description": "Key performance metrics with trends",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/DashboardMetricsResponse"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"error": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message",
+												"error"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message",
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get key performance metrics",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat type filter (default: catamaran)",
+						"in": "query",
+						"name": "boat_type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Time period for metrics (week, month, quarter, year)",
+						"in": "query",
+						"name": "period",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"week",
+								"month",
+								"quarter",
+								"year"
+							]
+						}
+					},
+					{
+						"description": "Specific metrics to retrieve",
+						"in": "query",
+						"name": "metrics",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/price-trends": {
+			"get": {
+				"operationId": "GetPriceTrends",
+				"responses": {
+					"200": {
+						"description": "Weekly price trends with averages",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/PriceTrendsResponse"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"error": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message",
+												"error"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message",
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get weekly price trends",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat type filter (default: catamaran)",
+						"in": "query",
+						"name": "boat_type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Specific weeks to retrieve",
+						"in": "query",
+						"name": "weeks",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Year for price trends (default: current year)",
+						"in": "query",
+						"name": "year",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/discount-trends": {
+			"get": {
+				"operationId": "GetDiscountTrends",
+				"responses": {
+					"200": {
+						"description": "Discount trends with averages",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/DiscountTrendsResponse"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"error": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message",
+												"error"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message",
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get discount trends",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat type filter (default: catamaran)",
+						"in": "query",
+						"name": "boat_type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Time range for trends (week, month, quarter, year)",
+						"in": "query",
+						"name": "time_range",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"week",
+								"month",
+								"quarter",
+								"year"
+							]
+						}
+					},
+					{
+						"description": "Start date for data filtering",
+						"in": "query",
+						"name": "date_from",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "End date for data filtering",
+						"in": "query",
+						"name": "date_to",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/availability": {
+			"get": {
+				"operationId": "GetAvailabilityTrends",
+				"responses": {
+					"200": {
+						"description": "Availability trends with insights",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/AvailabilityResponse"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"error": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message",
+												"error"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message",
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get availability trends",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat type filter (default: catamaran)",
+						"in": "query",
+						"name": "boat_type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Time range for trends (week, month, quarter, year)",
+						"in": "query",
+						"name": "time_range",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"week",
+								"month",
+								"quarter",
+								"year"
+							]
+						}
+					},
+					{
+						"description": "Start date for data filtering",
+						"in": "query",
+						"name": "date_from",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "End date for data filtering",
+						"in": "query",
+						"name": "date_to",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/revenue": {
+			"get": {
+				"operationId": "GetRevenueTrends",
+				"responses": {
+					"200": {
+						"description": "Revenue trends with projections",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/RevenueResponse"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"error": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message",
+												"error"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message",
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get revenue trends",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat type filter (default: catamaran)",
+						"in": "query",
+						"name": "boat_type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Time range for trends (week, month, quarter, year)",
+						"in": "query",
+						"name": "time_range",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"week",
+								"month",
+								"quarter",
+								"year"
+							]
+						}
+					},
+					{
+						"description": "Start date for data filtering",
+						"in": "query",
+						"name": "date_from",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "End date for data filtering",
+						"in": "query",
+						"name": "date_to",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/stats": {
+			"get": {
+				"operationId": "GetSummaryStats",
+				"responses": {
+					"200": {
+						"description": "Summary statistics with insights",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/DashboardStatsResponse"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"error": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message",
+												"error"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message",
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get summary statistics and insights",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Boat type filter (default: catamaran)",
+						"in": "query",
+						"name": "boat_type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Specific categories to retrieve",
+						"in": "query",
+						"name": "category",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Maximum number of stats to return",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/health": {
+			"get": {
+				"operationId": "HealthCheck",
+				"responses": {
+					"200": {
+						"description": "Simple health status",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"timestamp": {
+											"type": "string"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"timestamp",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Health check endpoint for dashboard",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": []
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	],
+	"tags": [
+		{
+			"name": "Authentication",
+			"description": "User authentication and registration endpoints"
+		},
+		{
+			"name": "Boats",
+			"description": "Boat data, search, and availability endpoints"
+		},
+		{
+			"name": "Dashboard",
+			"description": "Analytics and dashboard metrics endpoints"
+		},
+		{
+			"name": "Admin",
+			"description": "Administrative endpoints for user management and system monitoring"
+		}
+	]
+}

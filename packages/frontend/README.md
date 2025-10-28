@@ -1,11 +1,13 @@
-# `frontend`
+# Boats Stats Frontend
 
-> TODO: description
+A modern Next.js application for boat statistics and management.
 
 ## Usage
 
 ```
 const frontend = require('frontend');
 
-// TODO: DEMONSTRATE API
+## API Integration
+
+The frontend integrates with the backend API to fetch boat data, user authentication, and statistics.
 ```

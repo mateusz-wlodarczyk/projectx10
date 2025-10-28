@@ -4,7 +4,43 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "test": "node test-runner.js",
+    "test:all": "node test-runner.js",
+    "test:backend": "node test-runner.js --backend-only",
+    "test:frontend": "node test-runner.js --frontend-only",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:unit:frontend": "cd packages/frontend && npm run test",
+    "test:unit:backend": "cd packages/backend && npm run test",
+    "test:coverage": "node test-runner.js --no-e2e",
+    "test:ci": "node test-runner.js --no-e2e --no-coverage",
+    "test:watch": "cd packages/frontend && npm run test:watch & cd packages/backend && npm run test:watch",
+    "test:setup": "npm install && npx playwright install chromium",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd packages/backend && npm run build",
+    "build:frontend": "cd packages/frontend && npm run build",
+    "docker:build": "./scripts/ci-helper.sh docker",
+    "docker:up": "./scripts/ci-helper.sh up",
+    "docker:down": "./scripts/ci-helper.sh down",
+    "docker:health": "./scripts/ci-helper.sh health",
+    "ci:install": "./scripts/ci-helper.sh install",
+    "ci:test": "./scripts/ci-helper.sh test",
+    "ci:build": "./scripts/ci-helper.sh build",
+    "ci:lint": "./scripts/ci-helper.sh lint",
+    "ci:clean": "./scripts/ci-helper.sh clean",
+    "deploy:create": "./scripts/deploy.sh create",
+    "deploy:setup": "./scripts/deploy.sh setup",
+    "deploy:deploy": "./scripts/deploy.sh deploy",
+    "deploy:status": "./scripts/deploy.sh status",
+    "deploy:cleanup": "./scripts/deploy.sh cleanup"
+  },
   "dependencies": {
     "lerna": "^8.2.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
   }
 }

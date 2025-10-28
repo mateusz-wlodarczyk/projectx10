@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-10-28T17:29:40.520Z",
+  "testConfig": {
+    "coverage": {
+      "threshold": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
+    "timeout": 30000,
+    "retries": 2,
+    "parallel": true
+  },
+  "results": {
+    "backend": "completed",
+    "frontend": "completed",
+    "e2e": "completed",
+    "coverage": "completed"
+  },
+  "summary": {
+    "totalTests": "See individual reports",
+    "passed": "See individual reports",
+    "failed": "See individual reports",
+    "coverage": "See coverage reports"
+  }
+}

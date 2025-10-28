@@ -1,0 +1,36 @@
+name: 'Run Unit Tests'
+description: 'Run unit tests for backend and frontend with coverage'
+inputs:
+  upload-coverage:
+    description: 'Whether to upload coverage artifacts'
+    required: false
+    default: 'true'
+  coverage-suffix:
+    description: 'Suffix for coverage artifact names'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run backend unit tests with coverage
+      shell: bash
+      run: cd packages/backend && npm run test:coverage
+
+    - name: Run frontend unit tests with coverage
+      shell: bash
+      run: cd packages/frontend && npm run test:coverage
+
+    - name: Upload backend coverage
+      if: inputs.upload-coverage == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-coverage${{ inputs.coverage-suffix }}
+        path: packages/backend/coverage/
+
+    - name: Upload frontend coverage
+      if: inputs.upload-coverage == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-coverage${{ inputs.coverage-suffix }}
+        path: packages/frontend/coverage/

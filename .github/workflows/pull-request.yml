@@ -1,0 +1,186 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main, dev]
+    types: [opened, synchronize, reopened]
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  # Job 1: Linting
+  lint:
+    name: Code Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: ./.github/actions/setup-nodejs
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run linting
+        run: npm run ci:lint
+
+  # Job 2: Unit Tests (runs in parallel with e2e-tests)
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: ./.github/actions/setup-nodejs
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run Unit Tests
+        uses: ./.github/actions/run-unit-tests
+
+  # Job 3: E2E Tests (runs in parallel with unit-tests)
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: ./.github/actions/setup-nodejs
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          install-playwright: "true"
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          # Integration environment variables
+          NODE_ENV: integration
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results/
+
+  # Job 4: Status Comment (runs only when all previous jobs pass)
+  status-comment:
+    name: PR Status Comment
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, e2e-tests]
+    if: always() && (needs.lint.result == 'success' && needs.unit-tests.result == 'success' && needs.e2e-tests.result == 'success')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage-reports/
+
+      - name: Download E2E test results
+        uses: actions/download-artifact@v4
+        with:
+          path: test-reports/
+
+      - name: Generate coverage summary
+        id: coverage
+        run: |
+          echo "## 📊 Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Backend coverage
+          if [ -d "coverage-reports/backend-coverage" ]; then
+            echo "### Backend Coverage" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Unit tests passed" >> $GITHUB_STEP_SUMMARY
+            echo "- 📁 Coverage report available in artifacts" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Frontend coverage
+          if [ -d "coverage-reports/frontend-coverage" ]; then
+            echo "### Frontend Coverage" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Unit tests passed" >> $GITHUB_STEP_SUMMARY
+            echo "- 📁 Coverage report available in artifacts" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # E2E tests
+          if [ -d "test-reports/playwright-report" ]; then
+            echo "### E2E Tests" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ E2E tests passed" >> $GITHUB_STEP_SUMMARY
+            echo "- 📁 Test report available in artifacts" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('## 🚀 Pull Request Status')
+            );
+
+            const statusEmoji = '${{ needs.lint.result == 'success' && needs.unit-tests.result == 'success' && needs.e2e-tests.result == 'success' ? '✅' : '❌' }}';
+            const statusText = '${{ needs.lint.result == 'success' && needs.unit-tests.result == 'success' && needs.e2e-tests.result == 'success' ? 'All checks passed!' : 'Some checks failed' }}';
+
+            const commentBody = `## 🚀 Pull Request Status
+
+            ${statusEmoji} **${statusText}**
+
+            ### Test Results:
+            - **Linting**: ${{ needs.lint.result == 'success' ? '✅ Passed' : '❌ Failed' }}
+            - **Unit Tests**: ${{ needs.unit-tests.result == 'success' ? '✅ Passed' : '❌ Failed' }}
+            - **E2E Tests**: ${{ needs.e2e-tests.result == 'success' ? '✅ Passed' : '❌ Failed' }}
+
+            ### Coverage Reports:
+            - Backend coverage report available in artifacts
+            - Frontend coverage report available in artifacts
+            - E2E test report available in artifacts
+
+            ### Next Steps:
+            ${{ needs.lint.result == 'success' && needs.unit-tests.result == 'success' && needs.e2e-tests.result == 'success' ? '✅ Ready for review and merge!' : '❌ Please fix the failing checks before merging.' }}
+
+            ---
+            *This comment was automatically generated by the CI/CD pipeline.*`;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }

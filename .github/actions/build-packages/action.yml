@@ -1,0 +1,36 @@
+name: 'Build Packages'
+description: 'Build backend and frontend packages'
+inputs:
+  upload-builds:
+    description: 'Whether to upload build artifacts'
+    required: false
+    default: 'true'
+  build-suffix:
+    description: 'Suffix for build artifact names'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Build backend
+      shell: bash
+      run: npm run build:backend
+
+    - name: Build frontend
+      shell: bash
+      run: npm run build:frontend
+
+    - name: Upload backend build
+      if: inputs.upload-builds == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-build${{ inputs.build-suffix }}
+        path: packages/backend/dist/
+
+    - name: Upload frontend build
+      if: inputs.upload-builds == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build${{ inputs.build-suffix }}
+        path: packages/frontend/.next/

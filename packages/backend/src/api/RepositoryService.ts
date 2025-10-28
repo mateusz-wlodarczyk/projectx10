@@ -6,6 +6,16 @@ export class RepositoryService {
     this.client = createClient(supabaseUrl, supabaseKey);
   }
 
+  // Get the auth client for authentication operations
+  public get auth() {
+    return this.client.auth;
+  }
+
+  // Get the supabase client for direct access
+  public get supabase() {
+    return this.client;
+  }
+
   //SELECT
   public async select<T>(
     tableName: string,

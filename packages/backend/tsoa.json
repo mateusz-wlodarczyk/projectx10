@@ -5,7 +5,39 @@
   "spec": {
     "outputDirectory": "src/swagger",
     "specVersion": 3,
-    "basePath": "/"
+    "basePath": "/",
+    "spec": {
+      "info": {
+        "title": "BoatsStats API",
+        "version": "1.0.0",
+        "description": "Comprehensive yacht booking analytics API with boat data management, authentication, dashboard metrics, and admin functionality.",
+        "license": {
+          "name": "ISC"
+        },
+        "contact": {
+          "name": "BoatsStats API Support",
+          "email": "support@boatsstats.com"
+        }
+      },
+      "tags": [
+        {
+          "name": "Authentication",
+          "description": "User authentication and registration endpoints"
+        },
+        {
+          "name": "Boats",
+          "description": "Boat data, search, and availability endpoints"
+        },
+        {
+          "name": "Dashboard",
+          "description": "Analytics and dashboard metrics endpoints"
+        },
+        {
+          "name": "Admin",
+          "description": "Administrative endpoints for user management and system monitoring"
+        }
+      ]
+    }
   },
   "routes": {
     "routesDir": "src/routes"
