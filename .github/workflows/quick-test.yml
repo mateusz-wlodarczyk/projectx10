@@ -1,0 +1,47 @@
+name: Quick Test Workflow
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  quick-test:
+    name: Quick Test (All Checks)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: ./.github/actions/setup-nodejs
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          install-playwright: "true"
+
+      - name: Run Unit Tests
+        uses: ./.github/actions/run-unit-tests
+        with:
+          upload-coverage: "true"
+
+      - name: Build Backend
+        run: cd packages/backend && npm run build
+
+      - name: Build Frontend
+        run: cd packages/frontend && npm run build
+
+      - name: Success Summary
+        run: |
+          echo "## ✅ Quick Test Passed Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Completed Steps:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Unit tests executed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Backend build completed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Frontend build completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All checks passed!" >> $GITHUB_STEP_SUMMARY
+
