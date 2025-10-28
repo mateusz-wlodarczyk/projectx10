@@ -100,6 +100,7 @@ jobs:
 
       - name: Log in to Container Registry
         uses: docker/login-action@v3
+        continue-on-error: true
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -114,21 +115,21 @@ jobs:
             type=ref,event=branch
             type=sha,prefix={{branch}}-
 
-      - name: Build and push backend image
+      - name: Build backend image
         uses: docker/build-push-action@v5
         with:
           context: packages/backend
-          push: true
+          push: false
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build and push frontend image
+      - name: Build frontend image
         uses: docker/build-push-action@v5
         with:
           context: packages/frontend
           file: packages/frontend/Dockerfile
-          push: true
+          push: false
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
