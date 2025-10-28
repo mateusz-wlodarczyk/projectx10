@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main, dev]
     types: [opened, synchronize, reopened]
-  workflow_dispatch: # Manual trigger for testing
 
 env:
   NODE_VERSION: "22"
