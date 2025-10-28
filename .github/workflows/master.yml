@@ -2,7 +2,7 @@ name: Master Branch Quality Gate
 
 on:
   push:
-    branches: [dev]  # Using dev as master branch
+    branches: [main]  # Using main as master branch
   workflow_dispatch: # Manual trigger for production readiness check
 
 env:
