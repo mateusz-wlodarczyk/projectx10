@@ -85,6 +85,10 @@ describe("AuthProvider", () => {
     mockLocalStorage.getItem.mockReturnValue(null);
     mockLocalStorage.setItem.mockClear();
     mockLocalStorage.removeItem.mockClear();
+    
+    // Mock console.error to suppress unhandled errors in tests
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(console, "warn").mockImplementation(() => {});
   });
 
   afterEach(() => {
