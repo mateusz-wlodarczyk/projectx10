@@ -149,13 +149,7 @@ jobs:
   production-readiness:
     name: Production Readiness Summary
     runs-on: ubuntu-latest
-    needs:
-      [
-        code-quality,
-        unit-tests,
-        build-verification,
-        docker-build,
-      ]
+    needs: [code-quality, unit-tests, build-verification, docker-build]
     if: always()
 
     steps:
@@ -205,13 +199,7 @@ jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs:
-      [
-        code-quality,
-        unit-tests,
-        build-verification,
-        docker-build,
-      ]
+    needs: [code-quality, unit-tests, build-verification, docker-build]
     if: github.event_name == 'workflow_dispatch' && needs.code-quality.result == 'success' && needs.unit-tests.result == 'success' && needs.build-verification.result == 'success' && needs.docker-build.result == 'success'
     environment: production
 
