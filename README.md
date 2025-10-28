@@ -314,6 +314,7 @@ The project includes a comprehensive CI/CD pipeline with GitHub Actions:
 ### Workflows
 
 1. **CI/CD Pipeline** (`ci.yml`) - Runs on push and PR to main/dev
+
    - Unit Tests (Backend & Frontend)
    - E2E Tests with Playwright
    - Build both backend and frontend
@@ -321,6 +322,7 @@ The project includes a comprehensive CI/CD pipeline with GitHub Actions:
    - Security scanning with Trivy
 
 2. **Pull Request Checks** (`pull-request.yml`) - Runs on PR creation/update
+
    - Code linting
    - Unit and E2E tests
    - Generates coverage reports

@@ -44,4 +44,3 @@ jobs:
           echo "- ✅ Frontend build completed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "All checks passed!" >> $GITHUB_STEP_SUMMARY
-
