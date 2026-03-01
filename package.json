@@ -38,6 +38,7 @@
     "deploy:cleanup": "./scripts/deploy.sh cleanup"
   },
   "dependencies": {
+    "@netlify/plugin-nextjs": "^5.15.8",
     "lerna": "^8.2.1"
   },
   "devDependencies": {
