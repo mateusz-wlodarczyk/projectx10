@@ -1,0 +1,4 @@
+[build]
+  base    = "packages/frontend"
+  command = "npm install && npm run build"
+  publish = "packages/frontend/out"
