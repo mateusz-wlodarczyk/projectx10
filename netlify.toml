@@ -1,4 +1,10 @@
+# Netlify Build & Deploy: use these settings (do not override Publish directory in UI).
+# Base directory: where to run the build (Next.js app).
+# Publish: relative to base; Next.js plugin uses .next (not "out").
 [build]
   base    = "packages/frontend"
   command = "npm install && npm run build"
-  publish = "packages/frontend/out"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
