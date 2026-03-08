@@ -30,20 +30,45 @@ export const loggerSupabaseService = new Logger("SupabaseServiceLogger");
 
 // ----- CORS SETUP -----
 const corsOrigins = getCorsOrigins().map((o) => o.replace(/\/+$/, "").trim());
+const normalizeOrigin = (o: string) => o.replace(/\/+$/, "").trim();
+const isAllowedOrigin = (origin: string) => corsOrigins.some((a) => normalizeOrigin(a) === normalizeOrigin(origin));
 
+// 1) Preflight OPTIONS – must respond with CORS headers so browser allows actual request
+app.options("*", (req, res) => {
+  const origin = req.headers.origin;
+  if (origin && isAllowedOrigin(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  }
+  res.sendStatus(204);
+});
+
+// 2) CORS for actual requests (do not pass Error to cb – that prevents headers from being set)
 app.use(
   cors({
     origin: (origin, cb) => {
-      if (!origin) return cb(null, true); // allow server-to-server or curl requests
-      const normalized = origin.replace(/\/+$/, "").trim();
-      if (corsOrigins.includes(normalized)) return cb(null, true);
-      return cb(new Error("CORS not allowed"));
+      if (!origin) return cb(null, true);
+      if (isAllowedOrigin(origin)) return cb(null, true);
+      return cb(null, false);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
   }),
 );
+
+// 3) Ensure CORS headers on every response (including errors) for allowed origin
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && isAllowedOrigin(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
+  next();
+});
 
 // ----- HELMET SECURITY -----
 app.use(
@@ -117,6 +142,7 @@ cron.schedule("0 0 * * *", async () => {
 // ----- START SERVER -----
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+  console.log(`[CORS] Allowed origins: ${corsOrigins.join(", ")}`);
 });
 
 export default app;

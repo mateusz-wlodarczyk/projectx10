@@ -14,14 +14,11 @@ function normalizeOrigin(url: string): string {
   return url.trim().replace(/\/+$/, "") || url;
 }
 
-/** CORS: always include production frontend; merge with CORS_ORIGIN env (comma-separated). No trailing slashes. */
+/** CORS: always include production frontend (Netlify) even if NODE_ENV is wrong on Render; merge with CORS_ORIGIN. */
 export const getCorsOrigins = (): string[] => {
   const fromEnv = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(",").map((o) => normalizeOrigin(o)).filter(Boolean)
     : [];
-  if (process.env.NODE_ENV === "development") {
-    return [...new Set([...FRONTEND_URLS.DEVELOPMENT, ...fromEnv])];
-  }
-  // Production: always allow known frontend + env origins (so Netlify is never blocked by wrong CORS_ORIGIN)
+  // Always allow PRODUCTION (boats-filter.netlify.app) so env mix-up on Render never blocks it
   return [...new Set([...FRONTEND_URLS.PRODUCTION, ...FRONTEND_URLS.DEVELOPMENT, ...fromEnv])];
 };

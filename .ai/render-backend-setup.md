@@ -15,7 +15,10 @@
    - Dodaj zmienną **CORS_ORIGIN** = `https://boats-filter.netlify.app`.
    - Upewnij się, że są **SUPABASE_URL** i **SUPABASE_KEY**.
 5. **Manual Deploy** → **Deploy latest commit** (albo wypchnij commit i poczekaj na auto-deploy).
-6. Po deployu w **Logs** powinno być: `Server is running on port 10000` (lub inny PORT) – to znak, że działa **Express**, nie Next.js. Jeśli widzisz cokolwiek z "Next.js" albo "ready started server on", nadal działa frontend – wróć do punktu 3.
+6. Po deployu w **Logs** muszą być:
+   - `Server is running on port 10000` (lub inny PORT),
+   - `[CORS] Allowed origins: https://boats-filter.netlify.app, ...`
+   To znak, że działa **Express** z CORS. Jeśli widzisz "Next.js" albo "ready started server on", nadal działa frontend – wróć do punktu 3 i ustaw **Start Command** na `npm run start:backend`.
 
 Dopóki **Start Command** to `npm start`, pod projectx10.onrender.com działa **frontend**. Frontend nie ma tras `/dashboard/metrics`, `/boat/list` ani CORS – stąd "No 'Access-Control-Allow-Origin' header".
 
