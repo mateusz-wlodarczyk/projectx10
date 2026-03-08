@@ -9,6 +9,7 @@ import { useAuth } from "@/src/components/auth/AuthProvider";
 import AuthGuard from "@/src/components/auth/AuthGuard";
 import { createDashboardUser } from "@/src/lib/user-utils";
 import { BACKEND_URL } from "@/src/config/urls";
+import { devLog } from "@/src/lib/devLog";
 
 const AdminPage: React.FC = () => {
   const { user } = useAuth();
@@ -23,8 +24,7 @@ const AdminPage: React.FC = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      console.log("=== ADMIN PAGE: FETCHING USERS FROM BACKEND ===");
-      console.log("Making request to:", `${BACKEND_URL}/admin/users`);
+      devLog("=== ADMIN PAGE: FETCHING USERS FROM BACKEND ===", `${BACKEND_URL}/admin/users`);
 
       const response = await fetch(`${BACKEND_URL}/admin/users`, {
         method: "GET",
@@ -34,17 +34,11 @@ const AdminPage: React.FC = () => {
         },
       });
 
-      console.log(
-        "Admin users response status:",
-        response.status,
-        response.statusText
-      );
+      devLog("Admin users response status:", response.status, response.statusText);
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Admin users data received:", data);
-        console.log("Admin users array:", data.users);
-        console.log("Admin users count:", data.users?.length || 0);
+        devLog("Admin users data received:", data, "count:", data.users?.length || 0);
         setUsers(data.users || []);
         setLastSync(new Date());
       } else {
@@ -73,14 +67,8 @@ const AdminPage: React.FC = () => {
     lastSync: lastSync || undefined,
   };
 
-  // Console logs for admin data
-  console.log("=== ADMIN PAGE: BACKEND DATA ===");
-  console.log("Admin users:", users);
-  console.log("Admin users count:", users.length);
-  console.log("Admin loading:", loading);
-  console.log("Admin lastSync:", lastSync);
-  console.log("Admin systemMetrics:", systemMetrics);
-  console.log("=== END ADMIN PAGE DATA ===");
+  devLog("=== ADMIN PAGE: BACKEND DATA ===", { users, usersCount: users.length, loading, lastSync, systemMetrics });
+  devLog("=== END ADMIN PAGE DATA ===");
 
   const handleRefresh = () => {
     fetchUsers();

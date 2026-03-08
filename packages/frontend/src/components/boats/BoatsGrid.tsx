@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
+import { devLog } from "@/src/lib/devLog";
 
 interface BoatData {
   id: string;
@@ -51,58 +52,7 @@ const BoatsGrid: React.FC<BoatsGridProps> = ({
   error,
   view,
 }) => {
-  // Debug logging to understand the data structure
-  console.log("=== BOATSGRID: BOATS BEING RENDERED ===");
-  console.log("BoatsGrid received props:", {
-    boats,
-    boatsType: typeof boats,
-    boatsIsArray: Array.isArray(boats),
-    boatsLength: boats?.length,
-    loading,
-    error,
-    view,
-  });
-
-  // Log first 3 boats being rendered
-  if (Array.isArray(boats) && boats.length > 0) {
-    console.log("BoatsGrid: First 3 boats being rendered:");
-    boats.slice(0, 3).forEach((boat, index) => {
-      console.log(`BoatsGrid Boat ${index + 1} (${boat.slug}):`, {
-        id: boat.id,
-        slug: boat.slug,
-        title: boat.title,
-        manufacturer: boat.manufacturer,
-        model: boat.model,
-        category: boat.category,
-        country: boat.country,
-        city: boat.city,
-        price: boat.price,
-        currency: boat.currency,
-        thumb: boat.thumb,
-        main_img: boat.main_img,
-        year: boat.year,
-        length: boat.length,
-        capacity: boat.capacity,
-        cabins: boat.cabins,
-        isAvailable: boat.isAvailable,
-        isFeatured: boat.isFeatured,
-        reviewsScore: boat.reviewsScore,
-        totalReviews: boat.totalReviews,
-        views: boat.views,
-        discount: boat.discount,
-        originalPrice: boat.originalPrice,
-        coordinates: boat.coordinates,
-        marina: boat.marina,
-        region: boat.region,
-        category_slug: boat.category_slug,
-        createdAt: boat.createdAt,
-        updatedAt: boat.updatedAt,
-      });
-    });
-  } else {
-    console.log("BoatsGrid: No boats to render");
-  }
-  console.log("=== END BOATSGRID BOATS LOG ===");
+  devLog("=== BOATSGRID: BOATS BEING RENDERED ===", { boats, boatsLength: boats?.length, loading, error, view });
 
   if (loading) {
     return (

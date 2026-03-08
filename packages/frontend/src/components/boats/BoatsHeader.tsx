@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { devLog } from "@/src/lib/devLog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -36,15 +37,15 @@ const BoatsHeader: React.FC<BoatsHeaderProps> = ({
   const [searchTerm, setSearchTerm] = React.useState(searchQuery);
 
   React.useEffect(() => {
-    console.log("🔍 BoatsHeader: searchQuery changed to:", searchQuery);
+    devLog("🔍 BoatsHeader: searchQuery changed to:", searchQuery);
     setSearchTerm(searchQuery);
   }, [searchQuery]);
 
   // Debounced search effect - trigger for both empty and non-empty strings
   React.useEffect(() => {
-    console.log("🔍 BoatsHeader: searchTerm changed to:", searchTerm);
+    devLog("🔍 BoatsHeader: searchTerm changed to:", searchTerm);
     const timeoutId = setTimeout(() => {
-      console.log("🔍 BoatsHeader: Auto-triggering search for:", searchTerm);
+      devLog("🔍 BoatsHeader: Auto-triggering search for:", searchTerm);
       onSearch(searchTerm);
     }, 300); // 300ms debounce
 
@@ -52,7 +53,7 @@ const BoatsHeader: React.FC<BoatsHeaderProps> = ({
   }, [searchTerm]); // Remove onSearch from dependencies to prevent infinite loop
 
   const handleSearch = () => {
-    console.log("🔍 BoatsHeader: handleSearch called with:", searchTerm);
+    devLog("🔍 BoatsHeader: handleSearch called with:", searchTerm);
     onSearch(searchTerm);
   };
 
@@ -63,7 +64,7 @@ const BoatsHeader: React.FC<BoatsHeaderProps> = ({
   };
 
   const clearSearch = () => {
-    console.log("🔍 BoatsHeader: clearSearch called");
+    devLog("🔍 BoatsHeader: clearSearch called");
     setSearchTerm("");
     onSearch("");
   };

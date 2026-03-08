@@ -1,18 +1,15 @@
 import { useState, useCallback, useMemo } from "react";
 import { useDashboard } from "@/src/hooks/useDashboard";
+import { devLog } from "@/src/lib/devLog";
 
 export const useDashboardPage = () => {
   const [timeRange, setTimeRange] = useState<string>("month");
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
 
-  console.log("=== USEDASHBOARDPAGE: CALLING USEDASHBOARD ===");
+  devLog("=== USEDASHBOARDPAGE: CALLING USEDASHBOARD ===");
   const dashboardData = useDashboard("catamaran");
-  console.log("=== USEDASHBOARDPAGE: DASHBOARD DATA RECEIVED ===");
-  console.log("DashboardData:", dashboardData);
-  console.log("DashboardData.loading:", dashboardData.loading);
-  console.log("DashboardData.summary:", dashboardData.summary);
-  console.log("DashboardData.error:", dashboardData.error);
-  console.log("=== END USEDASHBOARDPAGE DATA ===");
+  devLog("=== USEDASHBOARDPAGE: DASHBOARD DATA RECEIVED ===", dashboardData);
+  devLog("=== END USEDASHBOARDPAGE DATA ===");
 
   const handleWeekChange = useCallback((week: number) => {
     setSelectedWeek(week);

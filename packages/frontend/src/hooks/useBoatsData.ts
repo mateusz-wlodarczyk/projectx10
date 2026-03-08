@@ -8,6 +8,7 @@ import {
   BoatsResponse,
 } from "@/types/dashboard";
 import { BACKEND_URL } from "@/src/config/urls";
+import { devLog } from "@/src/lib/devLog";
 
 // Default filter state
 const defaultFilters: FilterState = {
@@ -90,7 +91,7 @@ class BoatsApiService {
     pagination: PaginationConfig
   ): Promise<BoatsResponse> {
     return this.retryRequest(async () => {
-      console.log("BoatsApiService.getBoats called with:", {
+      devLog("BoatsApiService.getBoats called with:", {
         filters,
         pagination,
       });
@@ -123,8 +124,8 @@ class BoatsApiService {
       }
 
       const url = `${this.baseUrl}/list?${params}`;
-      console.log("Making fetch request to:", url);
-      console.log("Search parameter in URL:", params.get("search"));
+      devLog("Making fetch request to:", url);
+      devLog("Search parameter in URL:", params.get("search"));
 
       // Add timeout to fetch request
       const controller = new AbortController();
@@ -139,7 +140,7 @@ class BoatsApiService {
         });
 
         clearTimeout(timeoutId);
-        console.log("Response status:", response.status, response.statusText);
+        devLog("Response status:", response.status, response.statusText);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -153,10 +154,10 @@ class BoatsApiService {
         }
 
         const result = await response.json();
-        console.log("Response data:", result);
+        devLog("Response data:", result);
 
         // Debug the response structure
-        console.log("Response structure analysis:", {
+        devLog("Response structure analysis:", {
           hasSuccess: "success" in result,
           hasData: "data" in result,
           dataType: typeof result.data,
@@ -175,7 +176,7 @@ class BoatsApiService {
         if (filters.search && filters.search.trim()) {
           const searchTerm = filters.search.trim().toLowerCase();
           const boats = result.data?.boats || result.boats || [];
-          console.log(
+          devLog(
             `SEARCH VERIFICATION: Looking for "${searchTerm}" in ${boats.length} boats`
           );
 
@@ -184,11 +185,11 @@ class BoatsApiService {
               boat.title && boat.title.toLowerCase().includes(searchTerm)
           );
 
-          console.log(
+          devLog(
             `SEARCH RESULTS: Found ${matchingBoats.length} boats with "${searchTerm}" in title:`
           );
           matchingBoats.forEach((boat: any, index: number) => {
-            console.log(
+            devLog(
               `  ${index + 1}. "${boat.title}" (ID: ${boat.id || boat.slug})`
             );
           });
@@ -197,7 +198,7 @@ class BoatsApiService {
             console.warn(
               `NO MATCHES: No boats found with "${searchTerm}" in title`
             );
-            console.log(
+            devLog(
               "Available boat titles:",
               boats.map((b: any) => b.title)
             );
@@ -206,7 +207,7 @@ class BoatsApiService {
 
         // Transform the response to match expected format
         // Debug the data structure before transformation
-        console.log("Transformation input:", {
+        devLog("Transformation input:", {
           resultData: result.data,
           resultDataType: typeof result.data,
           resultDataKeys: result.data ? Object.keys(result.data) : "no data",
@@ -241,7 +242,7 @@ class BoatsApiService {
           };
         }
 
-        console.log("Extracted boats array:", {
+        devLog("Extracted boats array:", {
           boatsArray,
           boatsLength: boatsArray.length,
           boatsIsArray: Array.isArray(boatsArray),
@@ -387,7 +388,7 @@ class BoatsApiService {
 
   async searchBoatInBoatsList(boatId: string): Promise<any> {
     try {
-      console.log(
+      devLog(
         `Frontend: Searching for boat with ID: "${boatId}" in boats_list`
       );
 
@@ -400,7 +401,7 @@ class BoatsApiService {
       const result = await response.json();
 
       if (result.success) {
-        console.log(`Frontend: Found boat "${boatId}" in boats_list:`, {
+        devLog(`Frontend: Found boat "${boatId}" in boats_list:`, {
           slug: result.data.slug,
           title: result.data.title,
           country: result.data.country,
@@ -411,7 +412,7 @@ class BoatsApiService {
         });
         return result.data;
       } else {
-        console.log(
+        devLog(
           `Frontend: Boat "${boatId}" not found in boats_list:`,
           result.message
         );
@@ -532,7 +533,7 @@ const isCacheValid = (cacheKey: string) => {
 
 export function useBoatsData() {
   hookInitCounter++;
-  console.log(`🚀 useBoatsData hook initialized (${hookInitCounter})`);
+  devLog(`🚀 useBoatsData hook initialized (${hookInitCounter})`);
   const [state, setState] = useState<BoatsDataState>({
     boats: [],
     loading: true, // Start with loading true to show loading state initially
@@ -543,14 +544,14 @@ export function useBoatsData() {
     lastUpdated: null,
   });
 
-  console.log("🚀 Initial state:", state);
+  devLog("🚀 Initial state:", state);
 
   const prevFiltersRef = useRef<FilterState | null>(null);
   const prevPaginationRef = useRef<PaginationConfig | null>(null);
   const hasInitializedRef = useRef<boolean>(false);
 
-  console.log("🚀 prevFiltersRef.current:", prevFiltersRef.current);
-  console.log("🚀 prevPaginationRef.current:", prevPaginationRef.current);
+  devLog("🚀 prevFiltersRef.current:", prevFiltersRef.current);
+  devLog("🚀 prevPaginationRef.current:", prevPaginationRef.current);
 
   const fetchBoats = useCallback(
     async (filters: FilterState, pagination: PaginationConfig) => {
@@ -558,7 +559,7 @@ export function useBoatsData() {
 
       // Check cache first
       if (isCacheValid(cacheKey)) {
-        console.log(`📦 Using cached data for key: ${cacheKey}`);
+        devLog(`📦 Using cached data for key: ${cacheKey}`);
         const cached = boatsCache.get(cacheKey)!;
 
         // Ensure pagination exists and has required properties
@@ -581,20 +582,20 @@ export function useBoatsData() {
       }
 
       apiCallCounter++;
-      console.log(
+      devLog(
         `fetchBoats called (API call #${apiCallCounter}) - Cache miss for key: ${cacheKey}`
       );
 
       // Console log the selected filters
-      console.log("Selected filters:", {
+      devLog("Selected filters:", {
         search: filters.search,
         countries: filters.countries,
         yachtTypes: filters.yachtTypes,
         priceRange: filters.priceRange,
       });
 
-      console.log("Search parameter value:", filters.search);
-      console.log("Search parameter type:", typeof filters.search);
+      devLog("Search parameter value:", filters.search);
+      devLog("Search parameter type:", typeof filters.search);
 
       // Set loading state - always show loading for API calls
       setState((prev) => ({
@@ -605,7 +606,7 @@ export function useBoatsData() {
       }));
 
       // Start the async operation
-      console.log(
+      devLog(
         "Making API call to:",
         `${BACKEND_URL}/boat/list?page=${pagination.currentPage}&limit=${pagination.itemsPerPage}`
       );
@@ -614,21 +615,21 @@ export function useBoatsData() {
         const response = await boatsApi.getBoats(filters, pagination);
 
         // Console log the fetched boats with new fields
-        console.log("=== FRONTEND: BOATS RECEIVED FROM BACKEND ===");
-        console.log(
+        devLog("=== FRONTEND: BOATS RECEIVED FROM BACKEND ===");
+        devLog(
           `Frontend: Fetched ${response.data.length} boats from backend`
         );
-        console.log("Frontend: RAW RESPONSE from backend:", response);
+        devLog("Frontend: RAW RESPONSE from backend:", response);
 
         // Show first boat with ALL fields
         if (response.data.length > 0) {
-          console.log("Frontend: FIRST BOAT - ALL FIELDS:");
-          console.log("Complete boat object:", response.data[0]);
+          devLog("Frontend: FIRST BOAT - ALL FIELDS:");
+          devLog("Complete boat object:", response.data[0]);
 
-          console.log("Frontend: FIRST BOAT - FIELD NAMES:");
-          console.log("Available fields:", Object.keys(response.data[0]));
+          devLog("Frontend: FIRST BOAT - FIELD NAMES:");
+          devLog("Available fields:", Object.keys(response.data[0]));
 
-          console.log("Frontend: FIRST BOAT - PRICE FIELDS:");
+          devLog("Frontend: FIRST BOAT - PRICE FIELDS:");
           const boat = response.data[0];
           const priceFields = Object.keys(boat).filter(
             (key) =>
@@ -637,15 +638,15 @@ export function useBoatsData() {
               key.toLowerCase().includes("rate") ||
               key.toLowerCase().includes("fee")
           );
-          console.log("Price-related fields:", priceFields);
+          devLog("Price-related fields:", priceFields);
           priceFields.forEach((field) => {
-            console.log(`${field}:`, (boat as any)[field]);
+            devLog(`${field}:`, (boat as any)[field]);
           });
 
           // Log first 3 boats with all their fields
-          console.log("Frontend: First 3 boats received from backend:");
+          devLog("Frontend: First 3 boats received from backend:");
           response.data.slice(0, 3).forEach((boat, index) => {
-            console.log(`Frontend Boat ${index + 1} (${boat.slug}):`, {
+            devLog(`Frontend Boat ${index + 1} (${boat.slug}):`, {
               id: boat.id,
               slug: boat.slug,
               title: boat.title,
@@ -678,9 +679,9 @@ export function useBoatsData() {
             });
           });
         } else {
-          console.log("Frontend: No boats received from backend");
+          devLog("Frontend: No boats received from backend");
         }
-        console.log("=== END FRONTEND BOATS LOG ===");
+        devLog("=== END FRONTEND BOATS LOG ===");
 
         // Save to cache with fallback pagination
         boatsCache.set(cacheKey, {
@@ -688,14 +689,14 @@ export function useBoatsData() {
           pagination: response.pagination || defaultPagination,
           timestamp: Date.now(),
         });
-        console.log(`💾 Cached data for key: ${cacheKey}`);
+        devLog(`💾 Cached data for key: ${cacheKey}`);
 
         // Ensure pagination is valid before setting state
         const validPagination = response.pagination || defaultPagination;
 
         // Ensure boats is an array
         const boatsArray = Array.isArray(response.data) ? response.data : [];
-        console.log("Setting state with boats:", {
+        devLog("Setting state with boats:", {
           boatsArray,
           boatsLength: boatsArray.length,
           boatsIsArray: Array.isArray(boatsArray),
@@ -732,7 +733,7 @@ export function useBoatsData() {
   );
 
   const updateFilters = useCallback((newFilters: Partial<FilterState>) => {
-    console.log("useBoatsData: updateFilters called with:", newFilters);
+    devLog("useBoatsData: updateFilters called with:", newFilters);
     setState((prev) => ({
       ...prev,
       filters: { ...prev.filters, ...newFilters },
@@ -761,13 +762,13 @@ export function useBoatsData() {
   const refreshData = useCallback(() => {
     // Clear cache before refreshing
     boatsCache.clear();
-    console.log("Frontend: Cache cleared, fetching fresh data");
+    devLog("Frontend: Cache cleared, fetching fresh data");
     fetchBoats(state.filters, state.pagination);
   }, [fetchBoats, state.filters, state.pagination]);
 
   // Smart auto-fetch when important parameters change (with cache support)
   useEffect(() => {
-    console.log("useEffect triggered");
+    devLog("useEffect triggered");
 
     // Only check for changes if we've already initialized AND have previous values
     if (
@@ -775,7 +776,7 @@ export function useBoatsData() {
       !prevFiltersRef.current ||
       !prevPaginationRef.current
     ) {
-      console.log("Skipping change detection - not fully initialized");
+      devLog("Skipping change detection - not fully initialized");
       return;
     }
 
@@ -791,7 +792,7 @@ export function useBoatsData() {
 
     const importantChange = pageChanged || pageSizeChanged || searchChanged;
 
-    console.log("Changes detected:", {
+    devLog("Changes detected:", {
       pageChanged,
       pageSizeChanged,
       searchChanged,
@@ -799,11 +800,11 @@ export function useBoatsData() {
     });
 
     if (importantChange) {
-      console.log("Important changes detected, debouncing API call");
+      devLog("Important changes detected, debouncing API call");
 
       // Debounce API calls to prevent excessive requests
       const timeoutId = setTimeout(() => {
-        console.log("Debounced API call executing");
+        devLog("Debounced API call executing");
         prevFiltersRef.current = state.filters;
         prevPaginationRef.current = state.pagination;
         fetchBoats(state.filters, state.pagination);
@@ -811,11 +812,11 @@ export function useBoatsData() {
 
       // Cleanup timeout on unmount or dependency change
       return () => {
-        console.log("Cleaning up debounced API call");
+        devLog("Cleaning up debounced API call");
         clearTimeout(timeoutId);
       };
     } else {
-      console.log("No important changes detected, skipping fetchBoats");
+      devLog("No important changes detected, skipping fetchBoats");
     }
   }, [
     state.filters.search,
@@ -827,7 +828,7 @@ export function useBoatsData() {
   // Initial fetch on mount - run only once
   useEffect(() => {
     if (!hasInitializedRef.current) {
-      console.log("🚀 Initial fetch on mount (first time only)");
+      devLog("🚀 Initial fetch on mount (first time only)");
       hasInitializedRef.current = true;
 
       // Set initial refs to prevent false change detection
@@ -840,7 +841,7 @@ export function useBoatsData() {
 
   const clearCache = useCallback(() => {
     boatsCache.clear();
-    console.log("Frontend: Cache cleared manually");
+    devLog("Frontend: Cache cleared manually");
   }, []);
 
   return {
@@ -953,7 +954,7 @@ export function useBoatSearchById() {
 
   const searchBoatById = useCallback(async (boatId: string) => {
     if (!boatId.trim()) {
-      console.log("Frontend: Empty boat ID provided");
+      devLog("Frontend: Empty boat ID provided");
       return null;
     }
 

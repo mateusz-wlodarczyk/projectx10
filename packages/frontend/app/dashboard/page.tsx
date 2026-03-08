@@ -11,6 +11,7 @@ import {
   DashboardErrorState,
 } from "@/src/components/dashboard/DashboardStates";
 import AuthGuard from "@/src/components/auth/AuthGuard";
+import { devLog } from "@/src/lib/devLog";
 
 const DashboardPage: React.FC = () => {
   const {
@@ -28,19 +29,8 @@ const DashboardPage: React.FC = () => {
     handleTimeRangeChange,
   } = useDashboardPage();
 
-  // Console logs for backend data
-  console.log("=== DASHBOARD PAGE: BACKEND DATA ===");
-  console.log("Dashboard summary:", summary);
-  console.log("Dashboard priceData:", priceData);
-  console.log("Dashboard discountData:", discountData);
-  console.log("Dashboard loading:", loading);
-  console.log("Dashboard error:", error);
-  console.log("Dashboard lastRefresh:", lastRefresh);
-  console.log("Dashboard timeRange:", timeRange);
-  console.log("Dashboard selectedWeek:", selectedWeek);
-  console.log("Dashboard isLoading:", isLoading);
-  console.log("Dashboard hasError:", hasError);
-  console.log("=== END DASHBOARD PAGE DATA ===");
+  devLog("=== DASHBOARD PAGE: BACKEND DATA ===", { summary, priceData, discountData, loading, error, lastRefresh, timeRange, selectedWeek, isLoading, hasError });
+  devLog("=== END DASHBOARD PAGE DATA ===");
 
   if (isLoading) {
     return <DashboardLoadingState />;

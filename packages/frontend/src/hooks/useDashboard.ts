@@ -20,6 +20,7 @@ import {
   RevenueRequest,
   DashboardStatsRequest,
 } from "../types/dashboard";
+import { devLog } from "@/src/lib/devLog";
 
 export const useDashboard = (
   boatType: string = "catamaran"
@@ -44,7 +45,7 @@ export const useDashboard = (
   const fetchDashboardSummary =
     useCallback(async (): Promise<DashboardSummary | null> => {
       try {
-        console.log(
+        devLog(
           "[useDashboard] Fetching dashboard summary for boatType:",
           boatType
         );
@@ -53,9 +54,9 @@ export const useDashboard = (
         });
 
         const url = `${API_ENDPOINTS.DASHBOARD.SUMMARY}?${params}`;
-        console.log("[useDashboard] Making request to:", url);
-        console.log("[useDashboard] Full URL:", url);
-        console.log(
+        devLog("[useDashboard] Making request to:", url);
+        devLog("[useDashboard] Full URL:", url);
+        devLog(
           "[useDashboard] API_ENDPOINTS.DASHBOARD.SUMMARY:",
           API_ENDPOINTS.DASHBOARD.SUMMARY
         );
@@ -64,13 +65,13 @@ export const useDashboard = (
         abortControllerRef.current = controller;
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-        console.log("[useDashboard] About to make fetch request...");
+        devLog("[useDashboard] About to make fetch request...");
         const response = await fetch(url, { signal: controller.signal });
-        console.log("[useDashboard] Fetch request completed");
+        devLog("[useDashboard] Fetch request completed");
 
         clearTimeout(timeoutId);
 
-        console.log(
+        devLog(
           "[useDashboard] Response status:",
           response.status,
           response.statusText
@@ -85,7 +86,7 @@ export const useDashboard = (
         }
 
         const data = await response.json();
-        console.log("[useDashboard] Dashboard summary data received:", data);
+        devLog("[useDashboard] Dashboard summary data received:", data);
         return data.summary;
       } catch (error) {
         // Only log error if it's not an abort error
@@ -254,12 +255,12 @@ export const useDashboard = (
   }, [boatType]);
 
   const refresh = useCallback(async () => {
-    console.log("[useDashboard] Starting refresh...");
+    devLog("[useDashboard] Starting refresh...");
     setLoading(true);
     setError(null);
 
     try {
-      console.log("[useDashboard] Calling all fetch functions...");
+      devLog("[useDashboard] Calling all fetch functions...");
       const results = await Promise.allSettled([
         fetchDashboardSummary(),
         fetchKeyMetrics(),
@@ -270,7 +271,7 @@ export const useDashboard = (
         fetchSummaryStats(),
       ]);
 
-      console.log("[useDashboard] All fetch results:", results);
+      devLog("[useDashboard] All fetch results:", results);
 
       // Process results and handle partial failures
       const [
@@ -341,7 +342,7 @@ export const useDashboard = (
   }, [boatType]);
 
   useEffect(() => {
-    console.log("[useDashboard] useEffect triggered, calling refresh...");
+    devLog("[useDashboard] useEffect triggered, calling refresh...");
     refresh();
 
     // Cleanup function to abort any pending requests

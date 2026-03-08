@@ -11,7 +11,9 @@ const nextConfig = {
   },
 };
 
-console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+if (process.env.NODE_ENV === "development") {
+  console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
+}
 
 module.exports = {
   env: {

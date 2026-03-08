@@ -43,6 +43,7 @@ import {
   FileText,
 } from "lucide-react";
 import { BACKEND_URL } from "@/src/config/urls";
+import { devLog } from "@/src/lib/devLog";
 // Toast functionality will be implemented with simple alerts for now
 
 interface Note {
@@ -70,12 +71,9 @@ const NotesManagement: React.FC<NotesManagementProps> = ({
 
   // Fetch notes from backend
   const fetchNotes = async () => {
-    console.log("=== FRONTEND: STARTING FETCH NOTES ===");
+    devLog("=== FRONTEND: STARTING FETCH NOTES ===", `${BACKEND_URL}/admin/notes`);
     setIsLoading(true);
     try {
-      console.log("=== FRONTEND: MAKING REQUEST TO BACKEND ===");
-      console.log("Request URL:", `${BACKEND_URL}/admin/notes`);
-
       const response = await fetch(`${BACKEND_URL}/admin/notes`, {
         method: "GET",
         headers: {
@@ -83,51 +81,25 @@ const NotesManagement: React.FC<NotesManagementProps> = ({
         },
       });
 
-      console.log("=== FRONTEND: RESPONSE RECEIVED ===");
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-      console.log(
-        "Response headers:",
-        Object.fromEntries(response.headers.entries())
-      );
+      devLog("=== FRONTEND: RESPONSE RECEIVED ===", response.status, response.ok);
 
       if (response.ok) {
         const data = await response.json();
-        console.log("=== FRONTEND: BACKEND RESPONSE DATA ===");
-        console.log("Full response data:", JSON.stringify(data, null, 2));
-        console.log("Notes array:", data.notes);
-        console.log("Notes count:", data.notes?.length || 0);
-        console.log("Total:", data.total);
-
-        if (data.notes && data.notes.length > 0) {
-          console.log(
-            "First note structure:",
-            JSON.stringify(data.notes[0], null, 2)
-          );
-        } else {
-          console.log("=== FRONTEND: NO NOTES FOUND ===");
-          console.log("Notes array is empty or undefined");
-        }
-
+        devLog("=== FRONTEND: BACKEND RESPONSE DATA ===", data.notes?.length ?? 0, "notes, total:", data.total);
         setNotes(data.notes || []);
-        console.log("=== FRONTEND: NOTES SET IN STATE ===");
-        console.log("State updated with", data.notes?.length || 0, "notes");
       } else {
-        console.log("=== FRONTEND: ERROR RESPONSE ===");
         console.error("Failed to fetch notes - Status:", response.status);
         const errorText = await response.text();
         console.error("Error response text:", errorText);
-        // Set empty array instead of throwing error to prevent UI crashes
         setNotes([]);
       }
     } catch (error) {
-      console.log("=== FRONTEND: FETCH ERROR ===");
+      devLog("=== FRONTEND: FETCH ERROR ===");
       console.error("Error fetching notes:", error);
-      // Set empty array instead of throwing error to prevent UI crashes
       setNotes([]);
     } finally {
       setIsLoading(false);
-      console.log("=== FRONTEND: FETCH NOTES COMPLETED ===");
+      devLog("=== FRONTEND: FETCH NOTES COMPLETED ===");
     }
   };
 
@@ -150,17 +122,14 @@ const NotesManagement: React.FC<NotesManagementProps> = ({
 
       if (response.ok) {
         const data = await response.json();
-        console.log("=== FRONTEND: NOTE CREATED SUCCESSFULLY ===");
-        console.log("Created note data:", JSON.stringify(data, null, 2));
-        console.log("Created note object:", data.note);
+        devLog("=== FRONTEND: NOTE CREATED SUCCESSFULLY ===", data.note);
         setNotes([data.note, ...notes]);
         setNewNoteContent("");
         setIsCreateDialogOpen(false);
         alert("Note created successfully");
       } else {
         const errorData = await response.json();
-        console.log("=== FRONTEND: NOTE CREATION ERROR ===");
-        console.log("Error data:", JSON.stringify(errorData, null, 2));
+        devLog("=== FRONTEND: NOTE CREATION ERROR ===", errorData);
         alert(errorData.message || "Failed to create note");
       }
     } catch (error) {

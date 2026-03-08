@@ -9,6 +9,7 @@ import {
   ChartDataPoint,
 } from "../types/boat-detail";
 import { BACKEND_URL } from "@/src/config/urls";
+import { devLog } from "@/src/lib/devLog";
 
 const API_BASE_URL = BACKEND_URL;
 
@@ -38,7 +39,7 @@ export const useBoatDetail = (slug: string) => {
   const fetchBoatDetails = useCallback(
     async (boatSlug: string): Promise<SingleBoatDetails | null> => {
       try {
-        console.log(`Fetching boat details for slug: ${boatSlug}`);
+        devLog(`Fetching boat details for slug: ${boatSlug}`);
         const response = await fetch(
           `${API_BASE_URL}/boat/details/${boatSlug}`
         );
@@ -55,7 +56,7 @@ export const useBoatDetail = (slug: string) => {
           throw new Error(result.message || "Failed to fetch boat details");
         }
 
-        console.log(`Boat details fetched successfully for ${boatSlug}`);
+        devLog(`Boat details fetched successfully for ${boatSlug}`);
         return result.data;
       } catch (error) {
         console.error(`Error fetching boat details for ${boatSlug}:`, error);
@@ -69,7 +70,7 @@ export const useBoatDetail = (slug: string) => {
   const fetchAvailabilityData = useCallback(
     async (boatSlug: string): Promise<WeekData | null> => {
       try {
-        console.log(`Fetching availability data for slug: ${boatSlug}`);
+        devLog(`Fetching availability data for slug: ${boatSlug}`);
         const response = await fetch(
           `${API_BASE_URL}/boat/availability/${boatSlug}`
         );
@@ -88,7 +89,7 @@ export const useBoatDetail = (slug: string) => {
           );
         }
 
-        console.log(`Availability data fetched successfully for ${boatSlug}`);
+        devLog(`Availability data fetched successfully for ${boatSlug}`);
         return result.data;
       } catch (error) {
         console.error(
@@ -105,7 +106,7 @@ export const useBoatDetail = (slug: string) => {
   const fetchWeekData = useCallback(
     async (boatSlug: string, week: number): Promise<any> => {
       try {
-        console.log(`Fetching week ${week} data for slug: ${boatSlug}`);
+        devLog(`Fetching week ${week} data for slug: ${boatSlug}`);
         const response = await fetch(
           `${API_BASE_URL}/boat/availability/${boatSlug}/week/${week}`
         );
@@ -124,7 +125,7 @@ export const useBoatDetail = (slug: string) => {
           );
         }
 
-        console.log(`Week ${week} data fetched successfully for ${boatSlug}`);
+        devLog(`Week ${week} data fetched successfully for ${boatSlug}`);
         return result.data;
       } catch (error) {
         console.error(
@@ -344,7 +345,7 @@ export const useBoatDetail = (slug: string) => {
       setData((prev) => ({ ...prev, loading: true, error: null }));
 
       try {
-        console.log(`Loading boat data for slug: ${boatSlug}`);
+        devLog(`Loading boat data for slug: ${boatSlug}`);
 
         // Fetch boat details and availability data in parallel
         const [boatDetails, availabilityData] = await Promise.all([
@@ -372,7 +373,7 @@ export const useBoatDetail = (slug: string) => {
           }
         }
 
-        console.log(`Boat data loaded successfully for ${boatSlug}`);
+        devLog(`Boat data loaded successfully for ${boatSlug}`);
       } catch (error) {
         console.error(`Error loading boat data for ${boatSlug}:`, error);
         setData((prev) => ({

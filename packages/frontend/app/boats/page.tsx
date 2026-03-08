@@ -10,6 +10,7 @@ import { useBoatsPage } from "@/src/hooks/useBoatsPage";
 import { useAuth } from "@/src/components/auth/AuthProvider";
 import AuthGuard from "@/src/components/auth/AuthGuard";
 import { createDashboardUser } from "@/src/lib/user-utils";
+import { devLog } from "@/src/lib/devLog";
 
 export default function BoatsPage() {
   const { user } = useAuth();
@@ -31,17 +32,8 @@ export default function BoatsPage() {
     handleBoatClick,
   } = useBoatsPage({ user });
 
-  // Console logs for boats data
-  console.log("=== BOATS PAGE: BACKEND DATA ===");
-  console.log("Boats array:", boats);
-  console.log("Boats count:", boats?.length || 0);
-  console.log("Boats loading:", loading);
-  console.log("Boats error:", error);
-  console.log("Boats filters:", filters);
-  console.log("Boats pagination:", pagination);
-  console.log("Boats summary:", summary);
-  console.log("Boats currentView:", currentView);
-  console.log("=== END BOATS PAGE DATA ===");
+  devLog("=== BOATS PAGE: BACKEND DATA ===", { boats, loading, error, filters, pagination, summary, currentView });
+  devLog("=== END BOATS PAGE DATA ===");
 
   return (
     <AuthGuard requireAuth={true}>

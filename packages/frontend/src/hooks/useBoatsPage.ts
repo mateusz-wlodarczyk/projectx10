@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useBoatsData } from "@/src/hooks/useBoatsData";
 import { useBoatNavigation } from "@/src/hooks/useNavigation";
+import { devLog } from "@/src/lib/devLog";
 
 interface UseBoatsPageProps {
   user: any;
@@ -12,16 +13,8 @@ export const useBoatsPage = ({ user }: UseBoatsPageProps) => {
   const boatsData = useBoatsData();
   const { goToBoatDetails } = useBoatNavigation();
 
-  // Console logs for boats page hook data
-  console.log("=== USEBOATSPAGE HOOK: BACKEND DATA ===");
-  console.log("BoatsData from hook:", boatsData);
-  console.log("Boats array:", boatsData.boats);
-  console.log("Boats loading:", boatsData.loading);
-  console.log("Boats error:", boatsData.error);
-  console.log("Boats filters:", boatsData.filters);
-  console.log("Boats pagination:", boatsData.pagination);
-  console.log("Boats lastUpdated:", boatsData.lastUpdated);
-  console.log("=== END USEBOATSPAGE HOOK DATA ===");
+  devLog("=== USEBOATSPAGE HOOK: BACKEND DATA ===", boatsData);
+  devLog("=== END USEBOATSPAGE HOOK DATA ===");
 
   const handleSearch = useCallback(
     (query: string) => {
