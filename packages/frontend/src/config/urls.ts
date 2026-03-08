@@ -1,11 +1,15 @@
 /**
  * URL configuration constants
+ *
+ * In production, always prefer NEXT_PUBLIC_BACKEND_URL so Netlify/Vercel
+ * can configure the API target without code changes.
  */
 
 export const BACKEND_URL =
-  process.env.NODE_ENV === "production"
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  (process.env.NODE_ENV === "production"
     ? "https://yourbackend.com"
-    : "http://localhost:8080";
+    : "http://localhost:8080");
 
 export const API_ENDPOINTS = {
   AUTH: {
