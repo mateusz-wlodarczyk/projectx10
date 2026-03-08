@@ -15,5 +15,9 @@ export const getCorsOrigins = (): string[] => {
   if (process.env.CORS_ORIGIN) {
     return process.env.CORS_ORIGIN.split(",").map((o) => o.trim()).filter(Boolean);
   }
-  return process.env.NODE_ENV === "production" ? FRONTEND_URLS.PRODUCTION : FRONTEND_URLS.DEVELOPMENT;
+  // Render/Netlify often don't set NODE_ENV=production; allow production frontend unless explicitly dev
+  if (process.env.NODE_ENV === "development") {
+    return FRONTEND_URLS.DEVELOPMENT;
+  }
+  return [...FRONTEND_URLS.PRODUCTION, ...FRONTEND_URLS.DEVELOPMENT];
 };

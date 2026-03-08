@@ -37,6 +37,22 @@ export const loggerMain = new Logger("MainLogger");
 export const loggerSupabaseService = new Logger("SupabaseServiceLogger");
 export const loggerBoatService = new Logger("BoatServiceLogger");
 
+// CORS first so every response (including errors) can include headers
+const corsOrigins = getCorsOrigins();
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true); // same-origin or curl
+      if (corsOrigins.includes(origin)) return cb(null, true);
+      return cb(null, false);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
+  })
+);
+
 // Security middleware
 app.use(
   helmet({
@@ -48,13 +64,6 @@ app.use(
         imgSrc: ["'self'", "data:", "https:"],
       },
     },
-  }),
-);
-
-app.use(
-  cors({
-    origin: getCorsOrigins(),
-    credentials: true,
   }),
 );
 

@@ -23,7 +23,7 @@
 
 - `SUPABASE_URL` – URL projektu Supabase  
 - `SUPABASE_KEY` – anon key Supabase  
-- `CORS_ORIGIN` – `https://boats-filter.netlify.app` (frontend na Netlify)  
+- `CORS_ORIGIN` – `https://boats-filter.netlify.app` (frontend na Netlify). **Ważne:** bez tego przy błędach CORS requesty z Netlify mogą być blokowane. Backend domyślnie pozwala na ten origin w produkcji, ale ustawienie zmiennej gwarantuje działanie.  
 - `AVAILABILITY_YEAR` – `2025` (jeśli używasz tabeli `boat_availability_2025`)
 
 ## Dlaczego wcześniej było 404 i CORS?

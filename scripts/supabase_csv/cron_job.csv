@@ -1,0 +1,34 @@
+jobid,schedule,command,nodename,nodeport,database,username,active,jobname
+7,0 0 * * 0,"
+    select
+      net.http_post(
+          url:= 'https://vcuzudiuwzsguzomizqa.supabase.co/functions/v1/weeklyTask',
+          headers:=jsonb_build_object(
+            'Content-type', 'application/json',
+            'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'anon_key')
+          ),
+          body:=jsonb_build_object('time', now())
+      ) as request_id;
+    ",localhost,5432,postgres,postgres,t,invoke-weekly-task
+1,0 0 * * *,"
+    select
+      net.http_post(
+          url:= (select decrypted_secret from vault.decrypted_secrets where name = 'https://vcuzudiuwzsguzomizqa.supabase.co/functions/v1/dailyTask') || '/functions/v1/function-name',
+          headers:=jsonb_build_object(
+            'Content-type', 'application/json',
+            'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'anon_key')
+          ),
+          body:=concat('{""time"": ""', now(), '""}')::jsonb
+      ) as request_id;
+    ",localhost,5432,postgres,postgres,t,invoke-function-every-minute
+9,* * * * *,"
+    select
+      net.http_post(
+          url:= 'https://vcuzudiuwzsguzomizqa.supabase.co/functions/v1/dailyTask',
+          headers:= jsonb_build_object(
+            'Content-type', 'application/json',
+            'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'anon_key')
+          ),
+          body:= jsonb_build_object('time', now())
+      ) as request_id;
+    ",localhost,5432,postgres,postgres,t,invoke-daily-task
