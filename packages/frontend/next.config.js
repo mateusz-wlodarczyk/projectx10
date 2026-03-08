@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  // standalone only for production build (Docker); dev server can 404 with it on some setups
+  ...(process.env.NODE_ENV === "production" && { output: "standalone" }),
   async rewrites() {
     return [
       {

@@ -10,14 +10,18 @@ export const FRONTEND_URLS = {
 export const BACKEND_PORT = process.env.PORT || 8080;
 export const BACKEND_URL = process.env.NODE_ENV === "production" ? "https://boats-filter.netlify.app" : `http://localhost:${BACKEND_PORT}`;
 
-/** CORS: use CORS_ORIGIN env (comma-separated) or default frontend origins. No trailing slashes. */
+function normalizeOrigin(url: string): string {
+  return url.trim().replace(/\/+$/, "") || url;
+}
+
+/** CORS: always include production frontend; merge with CORS_ORIGIN env (comma-separated). No trailing slashes. */
 export const getCorsOrigins = (): string[] => {
-  if (process.env.CORS_ORIGIN) {
-    return process.env.CORS_ORIGIN.split(",").map((o) => o.trim()).filter(Boolean);
-  }
-  // Render/Netlify often don't set NODE_ENV=production; allow production frontend unless explicitly dev
+  const fromEnv = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(",").map((o) => normalizeOrigin(o)).filter(Boolean)
+    : [];
   if (process.env.NODE_ENV === "development") {
-    return FRONTEND_URLS.DEVELOPMENT;
+    return [...new Set([...FRONTEND_URLS.DEVELOPMENT, ...fromEnv])];
   }
-  return [...FRONTEND_URLS.PRODUCTION, ...FRONTEND_URLS.DEVELOPMENT];
+  // Production: always allow known frontend + env origins (so Netlify is never blocked by wrong CORS_ORIGIN)
+  return [...new Set([...FRONTEND_URLS.PRODUCTION, ...FRONTEND_URLS.DEVELOPMENT, ...fromEnv])];
 };

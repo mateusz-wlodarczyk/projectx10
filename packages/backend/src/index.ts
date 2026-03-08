@@ -1,71 +1,49 @@
-import cron from "node-cron";
-import dotenv from "dotenv";
+// server.ts
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import cron from "node-cron";
+
 dotenv.config();
 
 import { RegisterRoutes } from "./routes/routes";
 import { processBoats, sendBoatToServer } from "./utils/processBoats";
 import { handleError } from "./utils/handleErrors";
 import { CALCULATE_FREEWEEKS_TILL_YEAR } from "./config/constans";
-import { getCorsOrigins, FRONTEND_URLS } from "./config/urls";
+import { FRONTEND_URLS, getCorsOrigins } from "./config/urls";
 import { BoatAroundService } from "./services/BoatAroundService";
 import { SupabaseService } from "./services/SupabaseService";
 import { Logger } from "./services/Logger";
 import { isSlugArray } from "./utils/selectDataArrayChecking";
-import app from "./api/boats";
 
-// Simple rate limiting middleware
-const rateLimitMiddleware = (req: any, res: any, next: any) => {
-  // Simple rate limiting implementation
-  const ip = req.ip || req.connection.remoteAddress;
-  const now = Date.now();
-  const windowMs = 15 * 60 * 1000; // 15 minutes
-  const maxRequests = 100;
-
-  // For now, just pass through - implement proper rate limiting later
-  next();
-};
-
+const app = express();
 const port = process.env.PORT || 8080;
 
+// Services & loggers
 export const boatServiceCatamaran = new BoatAroundService();
 export const supabaseService = new SupabaseService();
 export const loggerMain = new Logger("MainLogger");
-export const loggerSupabaseService = new Logger("SupabaseServiceLogger");
-export const loggerBoatService = new Logger("BoatServiceLogger");
 
-// CORS first so every response (including errors) can include headers
-const corsOrigins = getCorsOrigins();
+// ----- CORS SETUP -----
+const corsOrigins = getCorsOrigins().map((o) => o.replace(/\/+$/, "").trim());
+
 app.use(
   cors({
     origin: (origin, cb) => {
-      if (!origin) return cb(null, true); // same-origin or curl
-      if (corsOrigins.includes(origin)) return cb(null, true);
-      return cb(null, false);
+      if (!origin) return cb(null, true); // allow server-to-server or curl requests
+      const normalized = origin.replace(/\/+$/, "").trim();
+      if (corsOrigins.includes(normalized)) return cb(null, true);
+      return cb(new Error("CORS not allowed"));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    optionsSuccessStatus: 204,
-  })
+  }),
 );
 
-// Jawna obsługa OPTIONS (preflight) – przeglądarka czasem nie dostaje CORS bez tego
-app.options("*", (req, res) => {
-  const origin = req.headers.origin;
-  if (origin && corsOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  }
-  res.sendStatus(204);
-});
-
-// Security middleware
+// ----- HELMET SECURITY -----
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -79,27 +57,27 @@ app.use(
   }),
 );
 
-// Body parsing middleware
+// ----- BODY PARSING -----
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Rate limiting middleware
-app.use(rateLimitMiddleware);
-
-// Trust proxy for accurate IP addresses
+// ----- TRUST PROXY -----
 app.set("trust proxy", 1);
 
+// ----- REGISTER ROUTES -----
 RegisterRoutes(app);
 
-// GET /dashboard — backend is API-only; redirect to frontend dashboard page
+// ----- DASHBOARD REDIRECT -----
 const dashboardRedirectUrl =
-  (process.env.CORS_ORIGIN?.split(",").map((o) => o.trim()).filter(Boolean)[0]) ||
-  (process.env.NODE_ENV === "production" ? FRONTEND_URLS.PRODUCTION[0] : FRONTEND_URLS.DEVELOPMENT[0]);
+  process.env.CORS_ORIGIN?.split(",")
+    .map((o) => o.trim())
+    .filter(Boolean)[0] || (process.env.NODE_ENV === "production" ? FRONTEND_URLS.PRODUCTION[0] : FRONTEND_URLS.DEVELOPMENT[0]);
+
 app.get("/dashboard", (_req, res) => {
   res.redirect(302, `${dashboardRedirectUrl}/dashboard`);
 });
 
-// Running weekly task
+// ----- WEEKLY CRON -----
 cron.schedule("0 0 * * 0", async () => {
   await loggerMain.info("Running weekly task");
   try {
@@ -111,7 +89,7 @@ cron.schedule("0 0 * * 0", async () => {
   }
 });
 
-// Running daily task
+// ----- DAILY CRON -----
 cron.schedule("0 0 * * *", async () => {
   await loggerMain.info("Running daily task");
   try {
@@ -134,6 +112,9 @@ cron.schedule("0 0 * * *", async () => {
   }
 });
 
+// ----- START SERVER -----
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+export default app;
