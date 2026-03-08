@@ -1,11 +1,11 @@
-try {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const data = await response.json();
-  setDashboardData(data);
-} catch (error) {
-  console.error('Error fetching dashboard data:', error);
-  setDashboardData({ error });
-}
+/**
+ * Re-export from src/hooks so that imports from "hooks/useDashboard"
+ * (e.g. root-level hooks folder) use the real implementation.
+ * Do not add top-level await or other code here.
+ */
+export {
+  useDashboard,
+  useDashboardMetrics,
+  useDashboardCharts,
+  useDashboardRefresh,
+} from "../src/hooks/useDashboard";

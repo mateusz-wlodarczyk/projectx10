@@ -8,6 +8,7 @@ import NotesManagement from "@/src/components/admin/NotesManagement";
 import { useAuth } from "@/src/components/auth/AuthProvider";
 import AuthGuard from "@/src/components/auth/AuthGuard";
 import { createDashboardUser } from "@/src/lib/user-utils";
+import { BACKEND_URL } from "@/src/config/urls";
 
 const AdminPage: React.FC = () => {
   const { user } = useAuth();
@@ -23,9 +24,9 @@ const AdminPage: React.FC = () => {
     setLoading(true);
     try {
       console.log("=== ADMIN PAGE: FETCHING USERS FROM BACKEND ===");
-      console.log("Making request to: http://localhost:8080/admin/users");
+      console.log("Making request to:", `${BACKEND_URL}/admin/users`);
 
-      const response = await fetch("http://localhost:8080/admin/users", {
+      const response = await fetch(`${BACKEND_URL}/admin/users`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

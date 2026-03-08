@@ -7,6 +7,7 @@ import {
   PaginationConfig,
   BoatsResponse,
 } from "@/types/dashboard";
+import { BACKEND_URL } from "@/src/config/urls";
 
 // Default filter state
 const defaultFilters: FilterState = {
@@ -48,7 +49,7 @@ interface BoatsDataState {
 
 // API service for boats data
 class BoatsApiService {
-  private baseUrl = "http://localhost:8080/boat";
+  private baseUrl = `${BACKEND_URL}/boat`;
   private maxRetries = 3;
   private retryDelay = 1000; // 1 second
 
@@ -606,7 +607,7 @@ export function useBoatsData() {
       // Start the async operation
       console.log(
         "Making API call to:",
-        `http://localhost:8080/boat/list?page=${pagination.currentPage}&limit=${pagination.itemsPerPage}`
+        `${BACKEND_URL}/boat/list?page=${pagination.currentPage}&limit=${pagination.itemsPerPage}`
       );
 
       try {

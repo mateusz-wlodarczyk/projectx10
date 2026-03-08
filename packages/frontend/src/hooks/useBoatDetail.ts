@@ -8,9 +8,9 @@ import {
   AvailabilityTimelineData,
   ChartDataPoint,
 } from "../types/boat-detail";
+import { BACKEND_URL } from "@/src/config/urls";
 
-// API base URL
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = BACKEND_URL;
 
 // Custom hook for boat detail data management
 export const useBoatDetail = (slug: string) => {

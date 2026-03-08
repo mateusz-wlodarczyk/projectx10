@@ -8,7 +8,7 @@
 export const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   (process.env.NODE_ENV === "production"
-    ? "https://yourbackend.com"
+    ? "https://projectx10.onrender.com"
     : "http://localhost:8080");
 
 export const API_ENDPOINTS = {

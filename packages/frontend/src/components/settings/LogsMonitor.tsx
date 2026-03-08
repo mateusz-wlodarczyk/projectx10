@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CronLogsMonitor from "./CronLogsMonitor";
 import SystemLogsMonitor from "./SystemLogsMonitor";
 import { CronJobLog, CronJob, SystemLog } from "@/src/types/logs";
+import { BACKEND_URL } from "@/src/config/urls";
 
 interface LogsMonitorProps {
   onRefresh: () => void;
@@ -22,7 +23,7 @@ const LogsMonitor: React.FC<LogsMonitorProps> = ({ onRefresh, loading }) => {
     try {
       // Fetch cron logs
       const cronLogsResponse = await fetch(
-        "http://localhost:8080/admin/logs/cron"
+        `${BACKEND_URL}/admin/logs/cron`
       );
       if (cronLogsResponse.ok) {
         const cronData = await cronLogsResponse.json();
@@ -31,7 +32,7 @@ const LogsMonitor: React.FC<LogsMonitorProps> = ({ onRefresh, loading }) => {
 
       // Fetch cron jobs configuration
       const cronJobsResponse = await fetch(
-        "http://localhost:8080/admin/cron/jobs"
+        `${BACKEND_URL}/admin/cron/jobs`
       );
       if (cronJobsResponse.ok) {
         const jobsData = await cronJobsResponse.json();
@@ -40,7 +41,7 @@ const LogsMonitor: React.FC<LogsMonitorProps> = ({ onRefresh, loading }) => {
 
       // Fetch system logs
       const systemLogsResponse = await fetch(
-        "http://localhost:8080/admin/logs/system"
+        `${BACKEND_URL}/admin/logs/system`
       );
       if (systemLogsResponse.ok) {
         const logsData = await systemLogsResponse.json();

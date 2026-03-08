@@ -1,9 +1,10 @@
+import { BACKEND_URL } from "@/src/config/urls";
+
 /**
  * Authentication service for handling login operations
  */
 export class AuthService {
-  private static readonly API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  private static readonly API_BASE_URL = BACKEND_URL;
 
   /**
    * Authenticates a user with email and password

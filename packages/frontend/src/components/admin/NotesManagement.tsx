@@ -42,6 +42,7 @@ import {
   Calendar,
   FileText,
 } from "lucide-react";
+import { BACKEND_URL } from "@/src/config/urls";
 // Toast functionality will be implemented with simple alerts for now
 
 interface Note {
@@ -73,9 +74,9 @@ const NotesManagement: React.FC<NotesManagementProps> = ({
     setIsLoading(true);
     try {
       console.log("=== FRONTEND: MAKING REQUEST TO BACKEND ===");
-      console.log("Request URL: http://localhost:8080/admin/notes");
+      console.log("Request URL:", `${BACKEND_URL}/admin/notes`);
 
-      const response = await fetch("http://localhost:8080/admin/notes", {
+      const response = await fetch(`${BACKEND_URL}/admin/notes`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +140,7 @@ const NotesManagement: React.FC<NotesManagementProps> = ({
 
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/admin/notes", {
+      const response = await fetch(`${BACKEND_URL}/admin/notes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -180,7 +181,7 @@ const NotesManagement: React.FC<NotesManagementProps> = ({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/notes/${editingNote.id}`,
+        `${BACKEND_URL}/admin/notes/${editingNote.id}`,
         {
           method: "PUT",
           headers: {
@@ -216,7 +217,7 @@ const NotesManagement: React.FC<NotesManagementProps> = ({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/notes/${noteId}`,
+        `${BACKEND_URL}/admin/notes/${noteId}`,
         {
           method: "DELETE",
           headers: {
