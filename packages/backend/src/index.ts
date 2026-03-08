@@ -25,6 +25,8 @@ const port = process.env.PORT || 8080;
 export const boatServiceCatamaran = new BoatAroundService();
 export const supabaseService = new SupabaseService();
 export const loggerMain = new Logger("MainLogger");
+export const loggerBoatService = new Logger("BoatServiceLogger");
+export const loggerSupabaseService = new Logger("SupabaseServiceLogger");
 
 // ----- CORS SETUP -----
 const corsOrigins = getCorsOrigins().map((o) => o.replace(/\/+$/, "").trim());
