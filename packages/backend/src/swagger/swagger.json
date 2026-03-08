@@ -3279,6 +3279,62 @@
 				"security": [],
 				"parameters": []
 			}
+		},
+		"/dashboard/supabase-check": {
+			"get": {
+				"operationId": "SupabaseCheck",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"sampleSlugs": {
+											"items": {
+												"type": "string"
+											},
+											"type": "array"
+										},
+										"error": {
+											"type": "string",
+											"nullable": true
+										},
+										"rowCount": {
+											"type": "number",
+											"format": "double"
+										},
+										"hasData": {
+											"type": "boolean"
+										},
+										"tableName": {
+											"type": "string"
+										},
+										"configured": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"sampleSlugs",
+										"error",
+										"rowCount",
+										"hasData",
+										"tableName",
+										"configured"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Debug: what Supabase returns for boat_availability table (data vs null).\nGET /dashboard/supabase-check",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": []
+			}
 		}
 	},
 	"servers": [

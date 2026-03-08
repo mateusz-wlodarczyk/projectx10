@@ -1,9 +1,11 @@
 import React from "react";
+import Link from "next/link";
 import DashboardLayout from "@/src/components/dashboard/DashboardLayout";
 import {
   PageLoadingState,
   PageErrorState,
 } from "@/src/components/common/LoadingStates";
+import { BACKEND_URL } from "@/src/config/urls";
 
 interface DashboardLoadingStateProps {
   message?: string;
@@ -45,10 +47,25 @@ interface DashboardErrorStateProps {
   error: string;
 }
 
+const supabaseCheckUrl = `${BACKEND_URL}/dashboard/supabase-check`;
+
 export const DashboardErrorState: React.FC<DashboardErrorStateProps> = ({
   error,
 }) => (
   <DashboardLayout>
-    <PageErrorState error={error} onRetry={() => window.location.reload()} />
+    <div className="space-y-4">
+      <PageErrorState error={error} onRetry={() => window.location.reload()} />
+      <p className="text-center text-sm text-gray-500">
+        Sprawdź odpowiedź Supabase:{" "}
+        <Link
+          href={supabaseCheckUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          {supabaseCheckUrl}
+        </Link>
+      </p>
+    </div>
   </DashboardLayout>
 );

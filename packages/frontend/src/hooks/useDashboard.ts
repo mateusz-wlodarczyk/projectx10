@@ -79,10 +79,15 @@ export const useDashboard = (
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error("[useDashboard] Error response body:", errorText);
-          throw new Error(
-            `HTTP error! status: ${response.status} - ${response.statusText}`
-          );
+          let message: string;
+          try {
+            const body = JSON.parse(errorText);
+            message = body.message || body.error || `${response.status} ${response.statusText}`;
+          } catch {
+            message = errorText || `HTTP error! status: ${response.status} - ${response.statusText}`;
+          }
+          console.error("[useDashboard] Error response:", response.status, message);
+          throw new Error(message);
         }
 
         const data = await response.json();
@@ -119,7 +124,14 @@ export const useDashboard = (
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let message: string;
+        try {
+          const body = await response.json();
+          message = body.message || body.error || `HTTP ${response.status}`;
+        } catch {
+          message = `HTTP error! status: ${response.status}`;
+        }
+        throw new Error(message);
       }
 
       const data = await response.json();
@@ -146,7 +158,14 @@ export const useDashboard = (
         );
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          let message: string;
+          try {
+            const body = await response.json();
+            message = body.message || body.error || `HTTP ${response.status}`;
+          } catch {
+            message = `HTTP error! status: ${response.status}`;
+          }
+          throw new Error(message);
         }
 
         const data = await response.json();
@@ -170,7 +189,14 @@ export const useDashboard = (
         );
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          let message: string;
+          try {
+            const body = await response.json();
+            message = body.message || body.error || `HTTP ${response.status}`;
+          } catch {
+            message = `HTTP error! status: ${response.status}`;
+          }
+          throw new Error(message);
         }
 
         const data = await response.json();
@@ -196,7 +222,14 @@ export const useDashboard = (
         );
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          let message: string;
+          try {
+            const body = await response.json();
+            message = body.message || body.error || `HTTP ${response.status}`;
+          } catch {
+            message = `HTTP error! status: ${response.status}`;
+          }
+          throw new Error(message);
         }
 
         const data = await response.json();
@@ -220,7 +253,14 @@ export const useDashboard = (
         );
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          let message: string;
+          try {
+            const body = await response.json();
+            message = body.message || body.error || `HTTP ${response.status}`;
+          } catch {
+            message = `HTTP error! status: ${response.status}`;
+          }
+          throw new Error(message);
         }
 
         const data = await response.json();
@@ -243,7 +283,14 @@ export const useDashboard = (
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let message: string;
+        try {
+          const body = await response.json();
+          message = body.message || body.error || `HTTP ${response.status}`;
+        } catch {
+          message = `HTTP error! status: ${response.status}`;
+        }
+        throw new Error(message);
       }
 
       const data = await response.json();

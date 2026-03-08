@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "start": "cd packages/frontend && npm run start",
+    "start:backend": "cd packages/backend && node dist/index.js",
     "test": "node test-runner.js",
     "test:all": "node test-runner.js",
     "test:backend": "node test-runner.js --backend-only",

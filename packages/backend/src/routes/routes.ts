@@ -1634,6 +1634,35 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsDashboardController_supabaseCheck: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/dashboard/supabase-check',
+            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.supabaseCheck)),
+
+            async function DashboardController_supabaseCheck(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsDashboardController_supabaseCheck, request, response });
+
+                const controller = new DashboardController();
+
+              await templateService.apiHandler({
+                methodName: 'supabaseCheck',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 

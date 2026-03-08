@@ -10,7 +10,7 @@ import { RegisterRoutes } from "./routes/routes";
 import { processBoats, sendBoatToServer } from "./utils/processBoats";
 import { handleError } from "./utils/handleErrors";
 import { CALCULATE_FREEWEEKS_TILL_YEAR } from "./config/constans";
-import { getCorsOrigins } from "./config/urls";
+import { getCorsOrigins, FRONTEND_URLS } from "./config/urls";
 import { BoatAroundService } from "./services/BoatAroundService";
 import { SupabaseService } from "./services/SupabaseService";
 import { Logger } from "./services/Logger";
@@ -69,6 +69,14 @@ app.use(rateLimitMiddleware);
 app.set("trust proxy", 1);
 
 RegisterRoutes(app);
+
+// GET /dashboard — backend is API-only; redirect to frontend dashboard page
+const dashboardRedirectUrl =
+  (process.env.CORS_ORIGIN?.split(",").map((o) => o.trim()).filter(Boolean)[0]) ||
+  (process.env.NODE_ENV === "production" ? FRONTEND_URLS.PRODUCTION[0] : FRONTEND_URLS.DEVELOPMENT[0]);
+app.get("/dashboard", (_req, res) => {
+  res.redirect(302, `${dashboardRedirectUrl}/dashboard`);
+});
 
 // Running weekly task
 cron.schedule("0 0 * * 0", async () => {

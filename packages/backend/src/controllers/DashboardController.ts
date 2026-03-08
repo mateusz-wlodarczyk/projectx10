@@ -65,7 +65,7 @@ export class DashboardController extends Controller {
       this.setStatus(500);
       return {
         error: "Internal Server Error",
-        message: "Failed to fetch dashboard summary",
+        message: error instanceof Error ? error.message : "Failed to fetch dashboard summary",
       };
     }
   }
@@ -110,7 +110,7 @@ export class DashboardController extends Controller {
       this.setStatus(500);
       return {
         error: "Internal Server Error",
-        message: "Failed to fetch key metrics",
+        message: error instanceof Error ? error.message : "Failed to fetch key metrics",
       };
     }
   }
@@ -155,7 +155,7 @@ export class DashboardController extends Controller {
       this.setStatus(500);
       return {
         error: "Internal Server Error",
-        message: "Failed to fetch price trends",
+        message: error instanceof Error ? error.message : "Failed to fetch price trends",
       };
     }
   }
@@ -203,7 +203,7 @@ export class DashboardController extends Controller {
       this.setStatus(500);
       return {
         error: "Internal Server Error",
-        message: "Failed to fetch discount trends",
+        message: error instanceof Error ? error.message : "Failed to fetch discount trends",
       };
     }
   }
@@ -251,7 +251,7 @@ export class DashboardController extends Controller {
       this.setStatus(500);
       return {
         error: "Internal Server Error",
-        message: "Failed to fetch availability trends",
+        message: error instanceof Error ? error.message : "Failed to fetch availability trends",
       };
     }
   }
@@ -299,7 +299,7 @@ export class DashboardController extends Controller {
       this.setStatus(500);
       return {
         error: "Internal Server Error",
-        message: "Failed to fetch revenue trends",
+        message: error instanceof Error ? error.message : "Failed to fetch revenue trends",
       };
     }
   }
@@ -345,7 +345,7 @@ export class DashboardController extends Controller {
       this.setStatus(500);
       return {
         error: "Internal Server Error",
-        message: "Failed to fetch summary stats",
+        message: error instanceof Error ? error.message : "Failed to fetch summary stats",
       };
     }
   }
@@ -362,5 +362,93 @@ export class DashboardController extends Controller {
       message: "Dashboard API is running",
       timestamp: new Date().toISOString(),
     };
+  }
+
+  /**
+   * Debug: what Supabase returns for boat_availability and boats_list.
+   * GET /dashboard/supabase-check — open in browser to see Supabase status.
+   */
+  @Get("/supabase-check")
+  @Response<{
+    configured: boolean;
+    tableName: string;
+    hasData: boolean;
+    rowCount: number;
+    error: string | null;
+    rawError: { code?: string; message?: string; details?: string } | null;
+    sampleSlugs: string[];
+    boatsListCheck: { ok: boolean; error: string | null; rowCount: number };
+  }>(200, "Supabase check result")
+  public async supabaseCheck(): Promise<{
+    configured: boolean;
+    tableName: string;
+    hasData: boolean;
+    rowCount: number;
+    error: string | null;
+    rawError: { code?: string; message?: string; details?: string } | null;
+    sampleSlugs: string[];
+    boatsListCheck: { ok: boolean; error: string | null; rowCount: number };
+  }> {
+    const { getAvailabilityYear } = await import("../config/constans");
+    const tableName = `boat_availability_${getAvailabilityYear()}`;
+    const out: {
+      configured: boolean;
+      tableName: string;
+      hasData: boolean;
+      rowCount: number;
+      error: string | null;
+      rawError: { code?: string; message?: string; details?: string } | null;
+      sampleSlugs: string[];
+      boatsListCheck: { ok: boolean; error: string | null; rowCount: number };
+    } = {
+      configured: !!supabaseService?.client,
+      tableName,
+      hasData: false,
+      rowCount: 0,
+      error: null,
+      rawError: null,
+      sampleSlugs: [],
+      boatsListCheck: { ok: false, error: null, rowCount: 0 },
+    };
+
+    if (!out.configured || !supabaseService.client) {
+      out.error = "Supabase client not configured (missing SUPABASE_URL/SUPABASE_KEY?)";
+      return out;
+    }
+
+    try {
+      const { data, error } = await supabaseService.client.supabase
+        .from(tableName)
+        .select("slug")
+        .limit(10);
+
+      if (error) {
+        out.error = error.message;
+        out.rawError = { code: error.code, message: error.message, details: error.details };
+        return out;
+      }
+      out.hasData = Array.isArray(data) && data.length > 0;
+      out.rowCount = data?.length ?? 0;
+      out.sampleSlugs = (data ?? []).map((r: { slug?: string }) => r?.slug ?? "").filter(Boolean);
+    } catch (e) {
+      out.error = e instanceof Error ? e.message : String(e);
+      out.rawError = out.error ? { message: out.error } : null;
+    }
+
+    try {
+      const { data: boatsData, error: boatsError } = await supabaseService.client.supabase
+        .from("boats_list")
+        .select("slug")
+        .limit(5);
+      out.boatsListCheck = {
+        ok: !boatsError,
+        error: boatsError?.message ?? null,
+        rowCount: Array.isArray(boatsData) ? boatsData.length : 0,
+      };
+    } catch (e) {
+      out.boatsListCheck = { ok: false, error: e instanceof Error ? e.message : String(e), rowCount: 0 };
+    }
+
+    return out;
   }
 }
