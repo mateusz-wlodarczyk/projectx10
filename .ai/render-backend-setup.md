@@ -2,6 +2,25 @@
 
 Żeby pod **https://projectx10.onrender.com** działał **backend** (Express z `/dashboard/*`, `/boat`, itd.), a nie frontend, w Renderze ta usługa musi budować i uruchamiać backend.
 
+---
+
+## CORS blokuje requesty z boats-filter.netlify.app? Zrób to:
+
+1. Wejdź w **Render Dashboard** → Twoja usługa (ta pod projectx10.onrender.com).
+2. **Settings** (lewa kolumna).
+3. **Build & Deploy**:
+   - **Build Command:** ustaw na `npm run build:backend` (nie `npm run build` ani nic z frontendem).
+   - **Start Command:** ustaw na `npm run start:backend` (nie `npm start` – to uruchamia Next.js).
+4. **Environment** (lewa kolumna):
+   - Dodaj zmienną **CORS_ORIGIN** = `https://boats-filter.netlify.app`.
+   - Upewnij się, że są **SUPABASE_URL** i **SUPABASE_KEY**.
+5. **Manual Deploy** → **Deploy latest commit** (albo wypchnij commit i poczekaj na auto-deploy).
+6. Po deployu w **Logs** powinno być: `Server is running on port 10000` (lub inny PORT) – to znak, że działa **Express**, nie Next.js. Jeśli widzisz cokolwiek z "Next.js" albo "ready started server on", nadal działa frontend – wróć do punktu 3.
+
+Dopóki **Start Command** to `npm start`, pod projectx10.onrender.com działa **frontend**. Frontend nie ma tras `/dashboard/metrics`, `/boat/list` ani CORS – stąd "No 'Access-Control-Allow-Origin' header".
+
+---
+
 ## Ustawienia usługi na Renderze (dla backendu)
 
 1. **Build Command**
