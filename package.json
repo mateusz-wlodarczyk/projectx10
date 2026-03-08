@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
+    "start": "cd packages/frontend && npm run start",
     "test": "node test-runner.js",
     "test:all": "node test-runner.js",
     "test:backend": "node test-runner.js --backend-only",
