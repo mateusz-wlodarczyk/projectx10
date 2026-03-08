@@ -1,4 +1,5 @@
 import { SupabaseService } from "./SupabaseService";
+import { getAvailabilityYear } from "../config/constans";
 import {
   DashboardSummary,
   KeyMetric,
@@ -379,9 +380,9 @@ export class DashboardService {
         throw new Error("Database service not available");
       }
 
-      // Query boats from boat_availability_2025 table - this contains all boats with availability data
-      const currentYear = new Date().getFullYear();
-      const tableName = `boat_availability_${currentYear}`;
+      // Query boats from boat_availability_* table (e.g. boat_availability_2025). Set AVAILABILITY_YEAR in env if needed.
+      const availabilityYear = getAvailabilityYear();
+      const tableName = `boat_availability_${availabilityYear}`;
       console.log(`DashboardService: Querying table: ${tableName}`);
 
       const { data, error } = await this.supabaseService.client.supabase.from(tableName).select("slug, id").limit(100); // Reduced limit for better performance
@@ -431,15 +432,15 @@ export class DashboardService {
    */
   private async getBoatPriceData(slug: string): Promise<{ price: number; discount: number }> {
     try {
-      const currentYear = new Date().getFullYear();
-      
+      const availabilityYear = getAvailabilityYear();
+
       // Use timeout to prevent hanging requests
       const timeoutPromise = new Promise<{ price: number; discount: number }>((_, reject) => {
         setTimeout(() => reject(new Error('Timeout')), 5000); // 5 second timeout
       });
 
       const dataPromise = this.supabaseService
-        .client!.supabase.from(`boat_availability_${currentYear}`)
+        .client!.supabase.from(`boat_availability_${availabilityYear}`)
         .select("*")
         .eq("slug", slug)
         .single()

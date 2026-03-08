@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { API_ENDPOINTS } from "../../config/urls";
+import { devLog } from "@/src/lib/devLog";
 
 // Types
 interface User {
@@ -58,20 +59,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize auth state on mount - optimized to reduce re-renders
   useEffect(() => {
-    console.log("AuthProvider - useEffect triggered");
+    devLog("AuthProvider - useEffect triggered");
 
     const initializeAuth = async () => {
-      console.log("AuthProvider - initializeAuth called");
+      devLog("AuthProvider - initializeAuth called");
       try {
         // Check for existing session/token
         if (typeof window !== "undefined") {
-          console.log("AuthProvider - window is defined");
+          devLog("AuthProvider - window is defined");
           const storedUser = localStorage.getItem("user");
-          console.log("AuthProvider - storedUser:", storedUser);
+          devLog("AuthProvider - storedUser:", storedUser);
 
           if (storedUser) {
             const user = JSON.parse(storedUser);
-            console.log("AuthProvider - setting authenticated user:", user);
+            devLog("AuthProvider - setting authenticated user:", user);
             setAuthState({
               user,
               isAuthenticated: true,
@@ -79,9 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               error: null,
             });
           } else {
-            console.log(
-              "AuthProvider - no stored user, setting unauthenticated"
-            );
+            devLog("AuthProvider - no stored user, setting unauthenticated");
             setAuthState({
               user: null,
               isAuthenticated: false,
@@ -90,9 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
           }
         } else {
-          console.log(
-            "AuthProvider - window undefined, setting unauthenticated"
-          );
+          devLog("AuthProvider - window undefined, setting unauthenticated");
           setAuthState({
             user: null,
             isAuthenticated: false,
@@ -233,7 +230,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    console.log("AuthProvider - logout called");
+    devLog("AuthProvider - logout called");
     setAuthState((prev) => ({ ...prev, isLoading: true }));
 
     try {
@@ -250,10 +247,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem("user");
         localStorage.removeItem("session");
         sessionStorage.removeItem("session");
-        console.log("AuthProvider - cleared localStorage and sessionStorage");
+        devLog("AuthProvider - cleared localStorage and sessionStorage");
       }
 
-      console.log("AuthProvider - setting unauthenticated state");
+      devLog("AuthProvider - setting unauthenticated state");
       setAuthState({
         user: null,
         isAuthenticated: false,
@@ -342,7 +339,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // Implement actual Supabase Auth email verification
-      console.log("Verifying email with token:", token);
+      devLog("Verifying email with token:", token);
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -370,7 +367,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // Implement actual Supabase Auth resend verification
-      console.log("Resending verification email");
+      devLog("Resending verification email");
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -392,7 +389,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshToken = async () => {
     try {
       // Implement actual token refresh
-      console.log("Refreshing token");
+      devLog("Refreshing token");
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 500));
