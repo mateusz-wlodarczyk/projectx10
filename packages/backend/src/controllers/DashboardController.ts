@@ -364,12 +364,3 @@ export class DashboardController extends Controller {
     };
   }
 }
-
-try {
-  const data = await getDashboardData(); // Funkcja pobierająca dane z bazy
-  console.log('Dashboard data:', data);
-  res.json(data);
-} catch (error) {
-  console.error('Error fetching dashboard data:', error);
-  res.status(500).json({ error: 'Internal Server Error' });
-}
