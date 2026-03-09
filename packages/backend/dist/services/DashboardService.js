@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DashboardService = void 0;
+const constans_1 = require("../config/constans");
 class DashboardService {
     supabaseService;
     constructor(supabaseService) {
@@ -333,9 +334,9 @@ class DashboardService {
                 console.error("DashboardService: Supabase client not available");
                 throw new Error("Database service not available");
             }
-            // Query boats from boat_availability_2025 table - this contains all boats with availability data
-            const currentYear = new Date().getFullYear();
-            const tableName = `boat_availability_${currentYear}`;
+            // Query boats from boat_availability_* table (e.g. boat_availability_2025). Set AVAILABILITY_YEAR in env if needed.
+            const availabilityYear = (0, constans_1.getAvailabilityYear)();
+            const tableName = `boat_availability_${availabilityYear}`;
             console.log(`DashboardService: Querying table: ${tableName}`);
             const { data, error } = await this.supabaseService.client.supabase.from(tableName).select("slug, id").limit(100); // Reduced limit for better performance
             console.log(`DashboardService: Query result - data: ${data?.length || 0} boats, error:`, error);
@@ -377,13 +378,13 @@ class DashboardService {
      */
     async getBoatPriceData(slug) {
         try {
-            const currentYear = new Date().getFullYear();
+            const availabilityYear = (0, constans_1.getAvailabilityYear)();
             // Use timeout to prevent hanging requests
             const timeoutPromise = new Promise((_, reject) => {
                 setTimeout(() => reject(new Error('Timeout')), 5000); // 5 second timeout
             });
             const dataPromise = this.supabaseService
-                .client.supabase.from(`boat_availability_${currentYear}`)
+                .client.supabase.from(`boat_availability_${availabilityYear}`)
                 .select("*")
                 .eq("slug", slug)
                 .single()

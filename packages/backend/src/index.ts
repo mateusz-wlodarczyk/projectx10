@@ -96,6 +96,45 @@ app.get("/who-is-running", (_req, res) => {
   res.json({ service: "boats-stats-api", cors: true, ok: true });
 });
 
+// ----- Debug: co zwraca Supabase (żeby zobaczyć surową odpowiedź) -----
+// Użyj GET /who-is-running – jeśli dostaniesz { "service": "boats-stats-api" }, to działa backend; wtedy /debug/supabase-response też.
+const debugSupabaseHandler = (req: express.Request, res: express.Response) => {
+  const out: {
+    configured: boolean;
+    table: string;
+    data: unknown;
+    error: unknown;
+    count?: number;
+    rawError?: unknown;
+  } = {
+    configured: supabaseService.isConfigured,
+    table: "boats_list",
+    data: null,
+    error: null,
+  };
+  if (!supabaseService.isConfigured || !supabaseService.client) {
+    res.json(out);
+    return;
+  }
+  const q = supabaseService.supabase
+    .from("boats_list")
+    .select("slug, _id, title")
+    .limit(5);
+  Promise.resolve(q)
+    .then(({ data, error }) => {
+      out.data = data;
+      out.error = error ? { message: error.message, code: error.code, details: error.details } : null;
+      out.count = Array.isArray(data) ? data.length : undefined;
+      res.json(out);
+    })
+    .catch((e: unknown) => {
+      out.rawError = e instanceof Error ? e.message : String(e);
+      res.json(out);
+    });
+};
+app.get("/debug/supabase-response", debugSupabaseHandler);
+app.get("/api/debug/supabase-response", debugSupabaseHandler);
+
 // ----- REGISTER ROUTES -----
 RegisterRoutes(app);
 

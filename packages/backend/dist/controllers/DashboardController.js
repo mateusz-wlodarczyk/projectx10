@@ -1,10 +1,43 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
@@ -50,7 +83,7 @@ let DashboardController = class DashboardController extends tsoa_1.Controller {
             this.setStatus(500);
             return {
                 error: "Internal Server Error",
-                message: "Failed to fetch dashboard summary",
+                message: error instanceof Error ? error.message : "Failed to fetch dashboard summary",
             };
         }
     }
@@ -85,7 +118,7 @@ let DashboardController = class DashboardController extends tsoa_1.Controller {
             this.setStatus(500);
             return {
                 error: "Internal Server Error",
-                message: "Failed to fetch key metrics",
+                message: error instanceof Error ? error.message : "Failed to fetch key metrics",
             };
         }
     }
@@ -120,7 +153,7 @@ let DashboardController = class DashboardController extends tsoa_1.Controller {
             this.setStatus(500);
             return {
                 error: "Internal Server Error",
-                message: "Failed to fetch price trends",
+                message: error instanceof Error ? error.message : "Failed to fetch price trends",
             };
         }
     }
@@ -157,7 +190,7 @@ let DashboardController = class DashboardController extends tsoa_1.Controller {
             this.setStatus(500);
             return {
                 error: "Internal Server Error",
-                message: "Failed to fetch discount trends",
+                message: error instanceof Error ? error.message : "Failed to fetch discount trends",
             };
         }
     }
@@ -194,7 +227,7 @@ let DashboardController = class DashboardController extends tsoa_1.Controller {
             this.setStatus(500);
             return {
                 error: "Internal Server Error",
-                message: "Failed to fetch availability trends",
+                message: error instanceof Error ? error.message : "Failed to fetch availability trends",
             };
         }
     }
@@ -231,7 +264,7 @@ let DashboardController = class DashboardController extends tsoa_1.Controller {
             this.setStatus(500);
             return {
                 error: "Internal Server Error",
-                message: "Failed to fetch revenue trends",
+                message: error instanceof Error ? error.message : "Failed to fetch revenue trends",
             };
         }
     }
@@ -267,7 +300,7 @@ let DashboardController = class DashboardController extends tsoa_1.Controller {
             this.setStatus(500);
             return {
                 error: "Internal Server Error",
-                message: "Failed to fetch summary stats",
+                message: error instanceof Error ? error.message : "Failed to fetch summary stats",
             };
         }
     }
@@ -281,6 +314,61 @@ let DashboardController = class DashboardController extends tsoa_1.Controller {
             message: "Dashboard API is running",
             timestamp: new Date().toISOString(),
         };
+    }
+    /**
+     * Debug: what Supabase returns for boat_availability and boats_list.
+     * GET /dashboard/supabase-check — open in browser to see Supabase status.
+     */
+    async supabaseCheck() {
+        const { getAvailabilityYear } = await Promise.resolve().then(() => __importStar(require("../config/constans")));
+        const tableName = `boat_availability_${getAvailabilityYear()}`;
+        const out = {
+            configured: !!index_1.supabaseService?.client,
+            tableName,
+            hasData: false,
+            rowCount: 0,
+            error: null,
+            rawError: null,
+            sampleSlugs: [],
+            boatsListCheck: { ok: false, error: null, rowCount: 0 },
+        };
+        if (!out.configured || !index_1.supabaseService.client) {
+            out.error = "Supabase client not configured (missing SUPABASE_URL/SUPABASE_KEY?)";
+            return out;
+        }
+        try {
+            const { data, error } = await index_1.supabaseService.client.supabase
+                .from(tableName)
+                .select("slug")
+                .limit(10);
+            if (error) {
+                out.error = error.message;
+                out.rawError = { code: error.code, message: error.message, details: error.details };
+                return out;
+            }
+            out.hasData = Array.isArray(data) && data.length > 0;
+            out.rowCount = data?.length ?? 0;
+            out.sampleSlugs = (data ?? []).map((r) => r?.slug ?? "").filter(Boolean);
+        }
+        catch (e) {
+            out.error = e instanceof Error ? e.message : String(e);
+            out.rawError = out.error ? { message: out.error } : null;
+        }
+        try {
+            const { data: boatsData, error: boatsError } = await index_1.supabaseService.client.supabase
+                .from("boats_list")
+                .select("slug")
+                .limit(5);
+            out.boatsListCheck = {
+                ok: !boatsError,
+                error: boatsError?.message ?? null,
+                rowCount: Array.isArray(boatsData) ? boatsData.length : 0,
+            };
+        }
+        catch (e) {
+            out.boatsListCheck = { ok: false, error: e instanceof Error ? e.message : String(e), rowCount: 0 };
+        }
+        return out;
     }
 };
 exports.DashboardController = DashboardController;
@@ -371,17 +459,15 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], DashboardController.prototype, "healthCheck", null);
+__decorate([
+    (0, tsoa_1.Get)("/supabase-check"),
+    (0, tsoa_1.Response)(200, "Supabase check result"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DashboardController.prototype, "supabaseCheck", null);
 exports.DashboardController = DashboardController = __decorate([
     (0, tsoa_1.Route)("dashboard"),
     (0, tsoa_1.Tags)("Dashboard"),
     __metadata("design:paramtypes", [])
 ], DashboardController);
-try {
-    const data = await getDashboardData(); // Funkcja pobierająca dane z bazy
-    console.log('Dashboard data:', data);
-    res.json(data);
-}
-catch (error) {
-    console.error('Error fetching dashboard data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-}
