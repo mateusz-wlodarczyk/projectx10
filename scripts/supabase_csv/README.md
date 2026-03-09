@@ -2,7 +2,7 @@
 
 ## 1. Utwórz tabele w Supabase
 
-W **Supabase** → **SQL Editor** → **New query** wklej zawartość pliku **`create_tables.sql`** i uruchom (Run). Skrypt tworzy tabele: `boats_list`, `boat_availability_2025`, `boat_availability_2026`, `boat_availability_2027`, `example` oraz podstawowe polityki RLS (odczyt dla wszystkich).
+W **Supabase** → **SQL Editor** → **New query** wklej zawartość pliku **`create_tables.sql`** i uruchom (Run). Skrypt tworzy tabele: `boats_list`, `boat_availability_2025`, `boat_availability_2026`, `boat_availability_2027`, `example`, **`users`** (User Management) oraz podstawowe polityki RLS (odczyt dla wszystkich).
 
 ## 2. (Opcjonalnie) Kolumna `usp` – jeśli tabela już istnieje i import rzuca 23502
 
@@ -28,6 +28,7 @@ Każdy plik CSV = jedna tabela. **Table Editor** → wybierz tabelę → **Impor
 | `boat_availability_2026.csv` | `public.boat_availability_2026` | 534 |
 | `boat_availability_2027.csv` | `public.boat_availability_2027` | 0 |
 | `example.csv` | `public.example` | 0 |
+| `users.csv` | `public.users` | User Management – id, email, first_name, last_name, role, email_verified, created_at, updated_at, last_login_at |
 
 ## Inne (auth, storage, cron, realtime)
 

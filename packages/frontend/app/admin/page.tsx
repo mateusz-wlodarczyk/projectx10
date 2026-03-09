@@ -15,23 +15,39 @@ const AdminPage: React.FC = () => {
   const { user } = useAuth();
   const [users, setUsers] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
+  const [usersError, setUsersError] = React.useState<string | null>(null);
   const [lastSync, setLastSync] = React.useState<Date | null>(null);
 
   // Create user object for DashboardLayout with all required fields
   const dashboardUser = createDashboardUser(user);
 
-  // Fetch users from Supabase
+  const getAuthHeaders = (): HeadersInit => {
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (typeof window === "undefined") return headers;
+    const storedSession = localStorage.getItem("session") || sessionStorage.getItem("session");
+    if (storedSession) {
+      try {
+        const session = JSON.parse(storedSession);
+        if (session?.access_token) {
+          (headers as Record<string, string>)["Authorization"] = `Bearer ${session.access_token}`;
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return headers;
+  };
+
+  // Fetch users from backend (Supabase Auth via API)
   const fetchUsers = async () => {
     setLoading(true);
+    setUsersError(null);
     try {
       devLog("=== ADMIN PAGE: FETCHING USERS FROM BACKEND ===", `${BACKEND_URL}/admin/users`);
 
       const response = await fetch(`${BACKEND_URL}/admin/users`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          // Add auth token here if needed
-        },
+        headers: getAuthHeaders(),
       });
 
       devLog("Admin users response status:", response.status, response.statusText);
@@ -39,16 +55,18 @@ const AdminPage: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         devLog("Admin users data received:", data, "count:", data.users?.length || 0);
-        setUsers(data.users || []);
+        setUsers(data.users ?? []);
         setLastSync(new Date());
       } else {
-        console.error(
-          "Admin users fetch failed:",
-          response.status,
-          response.statusText
-        );
+        const msg = response.status === 401
+          ? "Zaloguj się, aby zobaczyć listę użytkowników."
+          : `Błąd ${response.status}: ${response.statusText}`;
+        setUsersError(msg);
+        console.error("Admin users fetch failed:", response.status, response.statusText);
       }
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Nie udało się pobrać użytkowników.";
+      setUsersError(message);
       console.error("Admin users fetch error:", error);
     } finally {
       setLoading(false);
@@ -105,7 +123,7 @@ const AdminPage: React.FC = () => {
 
             {/* User Management */}
             <div data-testid="user-management">
-              <UserManagement users={users} loading={loading} />
+              <UserManagement users={users} loading={loading} error={usersError} />
             </div>
 
             {/* Notes Management */}

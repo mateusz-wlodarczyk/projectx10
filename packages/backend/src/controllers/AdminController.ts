@@ -1,51 +1,22 @@
 import { SupabaseService } from "../services/SupabaseService";
+import { UserService } from "../services/UserService";
 import { Controller, Get, Post, Put, Delete, Route, Body, Path } from "tsoa";
 
 @Route("admin")
 export class AdminController {
   private supabaseService: SupabaseService;
+  private userService: UserService;
 
   constructor() {
     this.supabaseService = new SupabaseService();
+    this.userService = new UserService(this.supabaseService);
   }
 
-  // Get all users
+  // Get all users from Supabase public.users table
   @Get("users")
   async getUsers(): Promise<{ users: any[]; total: number }> {
-    try {
-      console.log("Attempting to fetch users from Supabase...");
-
-      // Get users directly from auth.users table
-      const { data: authData, error: authError } = await this.supabaseService.adminSupabase.auth.admin.listUsers();
-
-      if (authError) {
-        console.error("Error fetching auth users:", authError);
-        throw new Error(`Failed to fetch auth users: ${authError.message}`);
-      }
-
-      console.log("Successfully fetched auth users:", authData?.users?.length || 0);
-
-      // Transform auth users to match our interface
-      const users = authData.users.map((user) => ({
-        id: user.id,
-        email: user.email || "",
-        firstName: user.user_metadata?.first_name || "",
-        lastName: user.user_metadata?.last_name || "",
-        role: user.user_metadata?.role || "user", // Default role
-        emailVerified: user.email_confirmed_at ? true : false,
-        createdAt: user.created_at,
-        updatedAt: user.updated_at,
-        lastLoginAt: user.last_sign_in_at,
-      }));
-
-      return {
-        users,
-        total: users.length,
-      };
-    } catch (error) {
-      console.error("Error in getUsers:", error);
-      throw error;
-    }
+    const result = await this.userService.getUsers();
+    return { users: result.users, total: result.total };
   }
 
   // Create a new user

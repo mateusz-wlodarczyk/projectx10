@@ -185,28 +185,31 @@ const WeeklyPriceChart: React.FC<WeeklyPriceChartProps> = ({
           </div>
         </div>
 
-        {/* Selected Week Details */}
-        {selectedWeek && (
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <div className="text-sm font-medium text-blue-900">
-              Tydzień {selectedWeek} - Szczegóły
-            </div>
-            <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-blue-700">Średnia cena:</span>
-                <span className="ml-2 font-medium">
-                  {chartData.find(d => d.week === selectedWeek)?.averagePrice.toLocaleString()} €
-                </span>
+        {/* Selected Week Details - use full priceData.weeks (chartData is only last 20 weeks) */}
+        {selectedWeek && priceData?.weeks && (() => {
+          const weekDetail = priceData.weeks.find((d) => d.week === selectedWeek);
+          return (
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <div className="text-sm font-medium text-blue-900">
+                Tydzień {selectedWeek} - Szczegóły
               </div>
-              <div>
-                <span className="text-blue-700">Liczba łodzi:</span>
-                <span className="ml-2 font-medium">
-                  {chartData.find(d => d.week === selectedWeek)?.boatCount}
-                </span>
+              <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-blue-700">Średnia cena:</span>
+                  <span className="ml-2 font-medium">
+                    {weekDetail?.averagePrice != null ? `${Number(weekDetail.averagePrice).toLocaleString()} €` : "—"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-blue-700">Liczba łodzi:</span>
+                  <span className="ml-2 font-medium">
+                    {weekDetail?.boatCount ?? "—"}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </CardContent>
     </Card>
   );

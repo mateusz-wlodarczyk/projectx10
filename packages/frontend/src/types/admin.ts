@@ -155,6 +155,7 @@ export interface AdminHeaderProps {
 export interface UserManagementProps {
   users: User[];
   loading: boolean;
+  error?: string | null;
 }
 
 export interface SystemSettingsProps {

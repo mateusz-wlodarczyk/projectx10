@@ -13,15 +13,20 @@ const DiscountChart: React.FC<DiscountChartProps> = ({
   loading,
   error,
 }) => {
-  // Process data for chart display
+  // Process data for chart display (timestamp from API may be string or Date)
   const chartData = useMemo(() => {
-    if (!discountData || !discountData.dataPoints) return [];
+    if (!discountData || !discountData.dataPoints || !Array.isArray(discountData.dataPoints))
+      return [];
 
-    // Sort by timestamp and limit to recent data points
-    return discountData.dataPoints
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-      .slice(-30); // Show last 30 data points
+    return [...discountData.dataPoints]
+      .sort(
+        (a, b) =>
+          new Date((a as { timestamp: string | Date }).timestamp).getTime() -
+          new Date((b as { timestamp: string | Date }).timestamp).getTime()
+      )
+      .slice(-30);
   }, [discountData]);
+
 
   // Calculate trend
   const trend = useMemo(() => {
@@ -143,16 +148,25 @@ const DiscountChart: React.FC<DiscountChartProps> = ({
             {/* Chart Bars */}
             <div className="flex items-end justify-between h-full space-x-1">
               {chartData.map((point, index) => {
-                const height = ((point.averageDiscount - discountData.minDiscount) / (discountData.maxDiscount - discountData.minDiscount)) * 100;
-                const isRecent = index >= chartData.length - 5; // Highlight recent data
-                
+                const range = discountData.maxDiscount - discountData.minDiscount;
+                const height =
+                  range === 0
+                    ? 50
+                    : ((point.averageDiscount - discountData.minDiscount) / range) * 100;
+                const isRecent = index >= chartData.length - 5;
+                const heightPercent = Number.isFinite(height) ? Math.max(height, 5) : 50;
+
                 return (
                   <div
-                    key={point.timestamp.toString()}
+                    key={
+                      typeof point.timestamp === "string"
+                        ? point.timestamp
+                        : String((point as { timestamp: Date }).timestamp)
+                    }
                     className={`flex-1 transition-all duration-200 ${
-                      isRecent ? 'bg-green-500' : 'bg-green-300'
+                      isRecent ? "bg-green-500" : "bg-green-300"
                     } rounded-t`}
-                    style={{ height: `${Math.max(height, 5)}%` }}
+                    style={{ height: `${heightPercent}%` }}
                     title={`${new Date(point.timestamp).toLocaleDateString()}: ${point.averageDiscount}% rabatu`}
                   />
                 );

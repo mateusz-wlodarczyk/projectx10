@@ -29,6 +29,21 @@ export default function DiscountChart({
       .slice(-30); // Show last 30 data points
   }, [discountData]);
 
+  // Last 10 unique dates for "Ostatnie rabaty" (avoid duplicate date rows)
+  const recentDiscountsByDate = useMemo(() => {
+    const seen = new Set<string>();
+    const result: { date: string; discount: number }[] = [];
+    for (let i = chartData.length - 1; i >= 0 && result.length < 10; i--) {
+      const point = chartData[i];
+      const dateStr = new Date(point.timestamp).toLocaleDateString();
+      if (!seen.has(dateStr)) {
+        seen.add(dateStr);
+        result.push({ date: dateStr, discount: point.discount });
+      }
+    }
+    return result;
+  }, [chartData]);
+
   const timeRangeOptions = [
     { value: 'all', label: 'Wszystkie' },
     { value: 'week', label: 'Ostatni tydzień' },
@@ -164,14 +179,10 @@ export default function DiscountChart({
           Ostatnie rabaty
         </h4>
         <div className="space-y-1 text-sm max-h-32 overflow-y-auto">
-          {chartData.slice(-10).reverse().map((point, index) => (
-            <div key={point.timestamp} className="flex justify-between">
-              <span className="text-green-700">
-                {new Date(point.timestamp).toLocaleDateString()}
-              </span>
-              <span className="text-green-900 font-medium">
-                {point.discount}%
-              </span>
+          {recentDiscountsByDate.map((item, index) => (
+            <div key={`${item.date}-${index}`} className="flex justify-between">
+              <span className="text-green-700">{item.date}</span>
+              <span className="text-green-900 font-medium">{item.discount}%</span>
             </div>
           ))}
         </div>

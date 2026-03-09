@@ -14,7 +14,7 @@ import {
 import { Search, Shield, Mail, Calendar } from "lucide-react";
 import { UserManagementProps, User } from "../../types/admin";
 
-const UserManagement: React.FC<UserManagementProps> = ({ users, loading }) => {
+const UserManagement: React.FC<UserManagementProps> = ({ users, loading, error }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Transform backend users to match frontend User interface
@@ -67,6 +67,11 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, loading }) => {
         </div>
       </CardHeader>
       <CardContent>
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+            {error}
+          </div>
+        )}
         {/* Search and Filters */}
         <div className="flex items-center space-x-2 mb-4">
           <div className="relative flex-1">
