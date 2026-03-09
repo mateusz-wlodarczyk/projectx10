@@ -106,25 +106,43 @@ export class BoatsController extends Controller {
         return createLegacyErrorResponse("Database service not available", 500);
       }
 
-      const { data, error } = await supabaseService.supabase.from("boats_list").select("*").eq("slug", slug).single();
+      // There can be duplicate rows for the same slug in boats_list (e.g. multiple offers).
+      // Instead of using .single() (which fails when >1 row), select and take the first match.
+      const { data, error } = await supabaseService.supabase.from("boats_list").select("*").eq("slug", slug).limit(2);
 
       if (error) {
-        console.log(`No boat found with slug "${slug}":`, error.message);
+        console.log(`Error querying boats_list for slug "${slug}":`, error.message);
         return createLegacyErrorResponse(`Boat with slug "${slug}" not found`, 404);
       }
 
-      if (data) {
+      const rows = Array.isArray(data) ? data : data ? [data] : [];
+
+      if (!rows.length) {
+        console.log(`No boat found with slug "${slug}" in boats_list`);
+        return createLegacyErrorResponse(`Boat with slug "${slug}" not found`, 404);
+      }
+
+      if (rows.length > 1) {
+        console.log(
+          `Multiple boats found with slug "${slug}" in boats_list, using the first one`,
+          rows.map((row) => row._id || row.id).slice(0, 3),
+        );
+      }
+
+      const boat = rows[0];
+
+      if (boat) {
         console.log(`Found boat details for "${slug}":`, {
-          slug: data.slug,
-          title: data.title,
-          manufacturer: data.manufacturer,
-          model: data.model,
-          country: data.country,
-          city: data.city,
-          priceFrom: data.priceFrom,
-          currency: data.currency,
+          slug: boat.slug,
+          title: boat.title,
+          manufacturer: boat.manufacturer,
+          model: boat.model,
+          country: boat.country,
+          city: boat.city,
+          priceFrom: boat.priceFrom,
+          currency: boat.currency,
         });
-        return createSuccessResponse(data, `Boat details for "${slug}" retrieved successfully`);
+        return createSuccessResponse(boat, `Boat details for "${slug}" retrieved successfully`);
       }
 
       return createLegacyErrorResponse(`Boat with slug "${slug}" not found`, 404);

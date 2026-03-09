@@ -137,6 +137,9 @@ export class DashboardService {
   async getWeeklyPriceTrends(boatType: string = "catamaran", year: number = 2025): Promise<WeeklyPriceData> {
     try {
       const boats = await this.getAggregatedBoatData(boatType);
+      if (boats.length === 0) {
+        return { weeks: [], minPrice: 0, maxPrice: 0, averagePrice: 0, totalBoats: 0 };
+      }
 
       // Generate weekly data points for the year
       const weeks: WeeklyPriceDataPoint[] = [];
@@ -183,6 +186,9 @@ export class DashboardService {
   async getDiscountTrends(boatType: string = "catamaran", timeRange: string = "month"): Promise<DiscountChartData> {
     try {
       const boats = await this.getAggregatedBoatData(boatType);
+      if (boats.length === 0) {
+        return { dataPoints: [], minDiscount: 0, maxDiscount: 0, averageDiscount: 0, totalBoats: 0 };
+      }
       const dataPoints: DiscountDataPoint[] = [];
 
       // Generate discount data points for the last 30 days
@@ -230,6 +236,9 @@ export class DashboardService {
   async getAvailabilityTrends(boatType: string = "catamaran", timeRange: string = "month"): Promise<AvailabilityData> {
     try {
       const boats = await this.getAggregatedBoatData(boatType);
+      if (boats.length === 0) {
+        return { dataPoints: [], averageAvailability: 0, averageOccupancy: 0, totalBoats: 0 };
+      }
       const dataPoints: AvailabilityDataPoint[] = [];
 
       // Generate availability data points
@@ -275,6 +284,9 @@ export class DashboardService {
   async getRevenueTrends(boatType: string = "catamaran", timeRange: string = "month"): Promise<RevenueData> {
     try {
       const boats = await this.getAggregatedBoatData(boatType);
+      if (boats.length === 0) {
+        return { dataPoints: [], totalRevenue: 0, averageRevenue: 0, totalBookings: 0, averageProfitMargin: 0 };
+      }
       const dataPoints: RevenueDataPoint[] = [];
 
       // Generate revenue data points
@@ -373,8 +385,8 @@ export class DashboardService {
   private async getAggregatedBoatData(boatType: string = "catamaran"): Promise<AggregatedBoatData[]> {
     try {
       if (!this.supabaseService.client) {
-        console.error("DashboardService: Supabase client not available");
-        throw new Error("Database service not available");
+        console.warn("DashboardService: Supabase client not available, returning empty data");
+        return [];
       }
 
       console.log("DashboardService: getAggregatedBoatData (boats_list) called for boatType:", boatType);
@@ -392,7 +404,7 @@ export class DashboardService {
 
       if (error) {
         console.error("DashboardService: Error querying boats_list:", error);
-        throw error;
+        return [];
       }
 
       const boats: AggregatedBoatData[] =
@@ -425,8 +437,9 @@ export class DashboardService {
       console.log(`DashboardService: Loaded ${boats.length} boats from boats_list for dashboard`);
       return boats;
     } catch (error) {
-      console.error("Error fetching boat data:", error);
-      throw error;
+      // On Render/Supabase network errors (e.g. "fetch failed") return empty so dashboard still returns 200
+      console.error("DashboardService: Error fetching boat data (returning empty):", error);
+      return [];
     }
   }
 

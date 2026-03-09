@@ -45,15 +45,31 @@ export const useBoatDetail = (slug: string) => {
         );
 
         if (!response.ok) {
+          // Treat 404 as "no data" instead of hard error
+          if (response.status === 404) {
+            devLog(
+              `Boat details not found for ${boatSlug} (HTTP 404) – returning null`
+            );
+            return null;
+          }
           throw new Error(
-            `Failed to fetch boat details: ${response.statusText}`
+            `Failed to fetch boat details: ${response.status} ${response.statusText}`
           );
         }
 
         const result = await response.json();
 
         if (!result.success) {
-          throw new Error(result.message || "Failed to fetch boat details");
+          // Backend legacy helper returns { success: false, statusCode }
+          if (result.statusCode === 404) {
+            devLog(
+              `Boat details not found for ${boatSlug} (statusCode 404) – returning null`
+            );
+            return null;
+          }
+          throw new Error(
+            result.message || result.error || "Failed to fetch boat details"
+          );
         }
 
         devLog(`Boat details fetched successfully for ${boatSlug}`);
@@ -76,16 +92,28 @@ export const useBoatDetail = (slug: string) => {
         );
 
         if (!response.ok) {
+          if (response.status === 404) {
+            devLog(
+              `Availability data not found for ${boatSlug} (HTTP 404) – returning null`
+            );
+            return null;
+          }
           throw new Error(
-            `Failed to fetch availability data: ${response.statusText}`
+            `Failed to fetch availability data: ${response.status} ${response.statusText}`
           );
         }
 
         const result = await response.json();
 
         if (!result.success) {
+          if (result.statusCode === 404) {
+            devLog(
+              `Availability data not found for ${boatSlug} (statusCode 404) – returning null`
+            );
+            return null;
+          }
           throw new Error(
-            result.message || "Failed to fetch availability data"
+            result.message || result.error || "Failed to fetch availability data"
           );
         }
 
