@@ -91,6 +91,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // ----- TRUST PROXY -----
 app.set("trust proxy", 1);
 
+// ----- Kto tu w ogóle działa (żeby odróżnić backend od frontendu na Renderze) -----
+app.get("/who-is-running", (_req, res) => {
+  res.json({ service: "boats-stats-api", cors: true, ok: true });
+});
+
 // ----- REGISTER ROUTES -----
 RegisterRoutes(app);
 

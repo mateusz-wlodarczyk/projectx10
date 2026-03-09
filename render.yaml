@@ -1,0 +1,25 @@
+# Render – backend (Express API) dla projectx10.onrender.com
+#
+# W Dashboard muszą być DWA osobne pola:
+#   Build Command:  npm install && npm run build:backend   (kompiluje TypeScript → dist/)
+#   Start Command:  npm run start:backend                  (uruchamia node dist/index.js)
+# Nie wkładaj start:backend w Build Command – wtedy nic się nie buduje i jest błąd przy starcie.
+#
+# Node 20 – żeby uniknąć ERR_REQUIRE_ASYNC_MODULE z Supabase w Node 22.
+services:
+  - type: web
+    name: projectx10-backend
+    runtime: node
+    buildCommand: npm install && npm run build:backend
+    startCommand: npm run start:backend
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://boats-filter.netlify.app
