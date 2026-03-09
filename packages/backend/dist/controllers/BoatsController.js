@@ -293,11 +293,15 @@ let BoatsController = class BoatsController extends tsoa_1.Controller {
                 countQuery = countQuery.ilike("title", `%${filters.search.trim()}%`);
             }
             const { count: totalCount, error: countError } = await countQuery;
+            // Count is nice to have for better pagination, but if it fails (e.g. transient
+            // network issue / undici fetch problem), we still want to return some boats
+            // instead of failing the entire endpoint.
             if (countError) {
-                console.error(`Error getting boats count:`, countError);
-                throw new Error(`Database error: ${countError.message}`);
+                console.error(`Error getting boats count (continuing without total count):`, countError);
             }
-            console.log(`Backend: Total boats in database: ${totalCount}`);
+            else {
+                console.log(`Backend: Total boats in database: ${totalCount}`);
+            }
             // Then fetch the actual data with pagination
             console.log(`Backend: Fetching boats data with pagination (page ${filters.page}, limit ${filters.limit})`);
             // Build the query with search filter
@@ -370,7 +374,7 @@ let BoatsController = class BoatsController extends tsoa_1.Controller {
             else {
                 console.log("No raw data received from database");
             }
-            console.log(`Backend: Found ${boatsListData?.length || 0} boats in boats_list (total: ${totalCount})`);
+            console.log(`Backend: Found ${boatsListData?.length || 0} boats in boats_list (total: ${totalCount ?? boatsListData?.length ?? 0})`);
             if (!boatsListData || boatsListData.length === 0) {
                 console.warn("Backend: No boats found in boats_list");
                 return {
@@ -412,8 +416,10 @@ let BoatsController = class BoatsController extends tsoa_1.Controller {
                 }
             })
                 .filter((boat) => boat !== null);
-            // Calculate pagination info
-            const totalPages = Math.ceil((totalCount || 0) / filters.limit);
+            // Calculate pagination info. If we don't have a reliable totalCount (e.g. count query failed),
+            // fall back to using the current page size so that the frontend still gets sane values.
+            const effectiveTotalCount = totalCount ?? boats.length ?? 0;
+            const totalPages = Math.max(1, Math.ceil(effectiveTotalCount / filters.limit));
             // Console log final results
             console.log(`Backend: Returning ${boats.length} boats (page ${filters.page}/${totalPages})`);
             // Check if search filtering worked correctly
