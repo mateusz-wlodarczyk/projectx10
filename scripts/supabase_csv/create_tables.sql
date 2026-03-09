@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS public.boats_list (
     coordinates numeric[] NOT NULL DEFAULT '{}',
     parameters jsonb NOT NULL,
     charter_rank jsonb NOT NULL,
-    usp jsonb[] DEFAULT '{}',
+    usp jsonb DEFAULT '[]'::jsonb,
     "noLicense" jsonb,
     "totalPrice" bigint,
     PRIMARY KEY (_id),
