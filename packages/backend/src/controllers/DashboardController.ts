@@ -138,7 +138,7 @@ export class DashboardController extends Controller {
           emptyMetric("average-discount", "Average Discount", "%", "percent", "red"),
           emptyMetric("occupancy-rate", "Occupancy Rate", "%", "users", "teal"),
         ],
-        period: request.period || "month",
+        period: period || "month",
         comparison: { previous: [], change: {} },
       };
     }
