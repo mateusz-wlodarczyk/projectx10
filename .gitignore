@@ -7,3 +7,6 @@ packages/backend/dist/.next/
 
 # Supabase schema & CSV data (kept local; not for public repo / recruitment)
 scripts/supabase_csv/
+
+# Internal recruitment / app description (kept local)
+.ai/opis-aplikacji-rekrutacja.md
