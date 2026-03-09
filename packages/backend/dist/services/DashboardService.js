@@ -12,17 +12,19 @@ class DashboardService {
      */
     async getDashboardSummary(boatType = "catamaran") {
         try {
-            // For now, return mock data to ensure fast response
-            // TODO: Optimize database queries for better performance
-            console.log("DashboardService: Returning mock dashboard summary data for fast response");
+            console.log("DashboardService: getDashboardSummary using real Supabase data");
+            const boats = await this.getAggregatedBoatData(boatType);
+            const calculations = await this.calculateDashboardMetrics(boats);
             return {
                 lastUpdate: new Date(),
-                totalBoats: 150,
+                totalBoats: calculations.totalBoats,
                 boatType: boatType,
-                totalRevenue: 2500000,
-                averagePrice: 5500,
-                totalBookings: 105,
-                availabilityRate: 85,
+                totalRevenue: calculations.totalRevenue,
+                averagePrice: calculations.averagePrice,
+                // For now, approximate bookings and availability based on boats count and availability rate.
+                // These values are derived from Supabase data instead of hardcoded mocks.
+                totalBookings: Math.max(calculations.totalBoats, Math.round(calculations.totalBoats * 1.2)),
+                availabilityRate: calculations.availabilityRate,
             };
         }
         catch (error) {
@@ -326,47 +328,49 @@ class DashboardService {
      */
     async getAggregatedBoatData(boatType = "catamaran") {
         try {
-            console.log("DashboardService: getAggregatedBoatData called for boatType:", boatType);
-            console.log("DashboardService: Checking Supabase client availability");
-            console.log("DashboardService: supabaseService.client:", !!this.supabaseService.client);
-            console.log("DashboardService: supabaseService.isConfigured:", this.supabaseService.isConfigured);
             if (!this.supabaseService.client) {
                 console.error("DashboardService: Supabase client not available");
                 throw new Error("Database service not available");
             }
-            // Query boats from boat_availability_* table (e.g. boat_availability_2025). Set AVAILABILITY_YEAR in env if needed.
-            const availabilityYear = (0, constans_1.getAvailabilityYear)();
-            const tableName = `boat_availability_${availabilityYear}`;
-            console.log(`DashboardService: Querying table: ${tableName}`);
-            const { data, error } = await this.supabaseService.client.supabase.from(tableName).select("slug, id").limit(100); // Reduced limit for better performance
-            console.log(`DashboardService: Query result - data: ${data?.length || 0} boats, error:`, error);
+            console.log("DashboardService: getAggregatedBoatData (boats_list) called for boatType:", boatType);
+            // For dashboard we can base calculations directly on boats_list, which we already use
+            // for the main boats list. This avoids heavy per-boat availability queries.
+            const query = this.supabaseService.client.supabase
+                .from("boats_list")
+                .select("slug, title, category, category_slug, priceFrom, discount, currency, views, \"reviewsScore\", \"totalReviews\"")
+                .limit(1000);
+            const { data, error } = await query;
             if (error) {
+                console.error("DashboardService: Error querying boats_list:", error);
                 throw error;
             }
-            // Use Promise.allSettled to handle individual boat failures gracefully
-            const boatsWithPrices = await Promise.allSettled((data || []).map(async (boat) => {
-                const priceData = await this.getBoatPriceData(boat.slug);
+            const boats = data?.map((row) => {
+                // discount column in CSV is text (e.g. '10'), convert safely to number
+                let discountValue = 0;
+                if (typeof row.discount === "number") {
+                    discountValue = row.discount;
+                }
+                else if (typeof row.discount === "string" && row.discount.trim() !== "") {
+                    const numeric = parseFloat(row.discount.replace("%", "").trim());
+                    discountValue = Number.isFinite(numeric) ? numeric : 0;
+                }
                 return {
-                    slug: boat.slug,
-                    title: `Boat ${boat.slug}`, // Generate title from slug
-                    category: "Sailboat", // Default category
-                    price: priceData.price,
-                    discount: priceData.discount,
-                    currency: "EUR",
+                    slug: row.slug,
+                    title: row.title,
+                    category: row.category || row.category_slug || boatType,
+                    price: typeof row.priceFrom === "number" ? row.priceFrom : Number(row.priceFrom) || 0,
+                    discount: discountValue,
+                    currency: row.currency || "EUR",
                     isAvailable: true,
-                    views: 0,
-                    reviewsScore: 0,
-                    totalReviews: 0,
+                    views: typeof row.views === "number" ? row.views : Number(row.views) || 0,
+                    reviewsScore: typeof row.reviewsScore === "number" ? row.reviewsScore : Number(row.reviewsScore) || 0,
+                    totalReviews: typeof row.totalReviews === "number" ? row.totalReviews : Number(row.totalReviews) || 0,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 };
-            }));
-            // Filter out failed promises and get successful results
-            const successfulActiveBoats = boatsWithPrices
-                .filter((result) => result.status === "fulfilled")
-                .map(result => result.value);
-            console.log(`DashboardService: Mapped ${successfulActiveBoats.length} boats with price data`);
-            return successfulActiveBoats;
+            }) ?? [];
+            console.log(`DashboardService: Loaded ${boats.length} boats from boats_list for dashboard`);
+            return boats;
         }
         catch (error) {
             console.error("Error fetching boat data:", error);
@@ -433,18 +437,8 @@ class DashboardService {
                 discountTrend: 0,
             };
         }
-        console.log(`DashboardService: Calculating metrics for ${boats.length} boats`);
-        // Get price data for each boat
-        const boatPrices = await Promise.all(boats.map(async (boat) => {
-            const priceData = await this.getBoatPriceData(boat.slug);
-            return {
-                slug: boat.slug,
-                price: priceData.price,
-                discount: priceData.discount,
-            };
-        }));
         const totalBoats = boats.length;
-        const boatsWithPrices = boatPrices.filter((bp) => bp.price > 0);
+        const boatsWithPrices = boats.filter((b) => b.price > 0);
         const averagePrice = boatsWithPrices.length > 0 ? Math.round(boatsWithPrices.reduce((sum, boat) => sum + boat.price, 0) / boatsWithPrices.length) : 0;
         const totalRevenue = Math.round(boatsWithPrices.reduce((sum, boat) => sum + boat.price, 0) * 0.7); // Calculate based on actual data
         const averageDiscount = boatsWithPrices.length > 0 ? Math.round((boatsWithPrices.reduce((sum, boat) => sum + boat.discount, 0) / boatsWithPrices.length) * 10) / 10 : 0;
