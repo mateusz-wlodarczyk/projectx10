@@ -1,3 +1,0 @@
-instance_id,id,payload,created_at,ip_address
-00000000-0000-0000-0000-000000000000,d8f7bfb6-47d0-43c9-b16a-f692f92e74f7,"{""action"":""user_invited"",""actor_id"":""00000000-0000-0000-0000-000000000000"",""actor_username"":""supabase_admin"",""actor_via_sso"":false,""log_type"":""team"",""traits"":{""user_email"":""szczep.sebastian@gmail.com"",""user_id"":""3333254c-fa40-4fe7-b727-1a4866d16a7f""}}",2025-03-27 11:40:40.977097+00,
-00000000-0000-0000-0000-000000000000,c154f829-692b-47d4-b233-8e9eb9532987,"{""action"":""user_signedup"",""actor_id"":""3333254c-fa40-4fe7-b727-1a4866d16a7f"",""actor_username"":""szczep.sebastian@gmail.com"",""actor_via_sso"":false,""log_type"":""team""}",2025-03-27 11:52:11.751531+00,

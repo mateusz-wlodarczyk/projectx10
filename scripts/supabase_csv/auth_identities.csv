@@ -1,2 +1,0 @@
-provider_id,user_id,identity_data,provider,last_sign_in_at,created_at,updated_at,id
-3333254c-fa40-4fe7-b727-1a4866d16a7f,3333254c-fa40-4fe7-b727-1a4866d16a7f,"{""sub"": ""3333254c-fa40-4fe7-b727-1a4866d16a7f"", ""email"": ""szczep.sebastian@gmail.com"", ""email_verified"": true, ""phone_verified"": false}",email,2025-03-27 11:40:40.97409+00,2025-03-27 11:40:40.974143+00,2025-03-27 11:40:40.974143+00,980e14f0-cb4a-4de8-b464-a23082c99403

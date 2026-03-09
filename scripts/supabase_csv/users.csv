@@ -1,4 +1,0 @@
-id,email,first_name,last_name,role,email_verified,created_at,updated_at,last_login_at
-3333254c-fa40-4fe7-b727-1a4866d16a7f,szczep.sebastian@gmail.com,Sebastian,Szczepanski,admin,true,2025-03-27T11:40:40.932674+00,2025-03-27T11:52:11.784583+00,2025-03-27T11:52:11.768317+00
-a1b2c3d4-e5f6-7890-abcd-ef1234567890,jane.doe@example.com,Jane,Doe,user,true,2025-01-15T09:00:00.000000+00,2025-01-15T09:00:00.000000+00,
-b2c3d4e5-f6a7-8901-bcde-f12345678901,john.smith@example.com,John,Smith,manager,false,2025-02-01T12:30:00.000000+00,2025-02-01T12:30:00.000000+00,

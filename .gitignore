@@ -4,3 +4,6 @@ packages/backend/dist/.next/
 
 # Local Netlify folder
 .netlify
+
+# Supabase schema & CSV data (kept local; not for public repo / recruitment)
+scripts/supabase_csv/
